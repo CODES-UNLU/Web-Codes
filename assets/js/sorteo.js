@@ -236,6 +236,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const precios = {
             '1': 1000,
             '3': 2800,
+            '4': 3600, // 10% OFF - Antes $4000
+            '6': 4950, // 10% OFF - Antes $5500
+            '10': 8100 // 10% OFF - Antes $9000
+        };
+        
+        const preciosOriginales = {
+            '1': 1000,
+            '3': 2800,
             '4': 4000,
             '6': 5500,
             '10': 9000
@@ -264,7 +272,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cantidadChances && precios[cantidadChances]) {
             const chancesTotales = parseInt(cantidadChances) + chancesRegalo[cantidadChances];
             chancesDisplay.textContent = chancesTotales;
-            totalPrecio.textContent = `$${precios[cantidadChances].toLocaleString()}`;
+            
+            // Mostrar precio con descuento si aplica
+            if (['4', '6', '10'].includes(cantidadChances)) {
+                const precioOriginal = preciosOriginales[cantidadChances];
+                const precioConDescuento = precios[cantidadChances];
+                const descuento = precioOriginal - precioConDescuento;
+                totalPrecio.innerHTML = `
+                    <span class="text-success fw-bold">$${precioConDescuento.toLocaleString()}</span>
+                    <small class="text-muted d-block">
+                        <s>Antes $${precioOriginal.toLocaleString()}</s> 
+                        <span class="text-success">(-$${descuento.toLocaleString()})</span>
+                    </small>
+                `;
+            } else {
+                totalPrecio.textContent = `$${precios[cantidadChances].toLocaleString()}`;
+            }
         } else {
             chancesDisplay.textContent = '0';
             totalPrecio.textContent = '$0';
@@ -276,13 +299,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const goToPayContainer = document.getElementById('goToPayContainer');
     const goToPayBtn = document.getElementById('goToPayBtn');
 
-    // Links de pago según la cantidad de chances
+    // Links de pago según la cantidad de chances (PROVISORIOS - FIN DE SEMANA)
     const paymentLinks = {
         1: 'https://mpago.la/1dNkdK5', // $1000
         3: 'https://mpago.la/2sDNEXs', // $2800
-        4: 'https://mpago.la/1f7bfZb', // $4000
-        6: 'https://mpago.la/2jGc6UY', // $5500
-        10: 'https://mpago.la/2L4x5Xw' // $9000
+        4: 'https://mpago.la/1E1UAkf', // $3600 (10% OFF - Antes $4000)
+        6: 'https://mpago.la/1tev5QL', // $4950 (10% OFF - Antes $5500)
+        10: 'https://mpago.la/1i79RHz' // $8100 (10% OFF - Antes $9000)
     };
     
     console.log('🔗 Enlaces de pago cargados:', paymentLinks);

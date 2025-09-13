@@ -126,7 +126,6 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/styles.css" />
-    <link rel="stylesheet" href="assets/css/letter-game.css?v=1.0" />
     
     <!-- Carrusel Custom Styles -->
     <style>
@@ -878,21 +877,6 @@
         }
       }
 
-      .letter {
-        display: inline-block;
-        color: #ccc;
-        text-shadow: 0 0 8px rgba(204, 204, 204, 0.5);
-        transition: all 0.5s ease-in-out;
-        opacity: 1;
-      }
-
-      .letter.illuminate {
-        color: var(--cyber-primary);
-        text-shadow: 0 0 15px rgba(0, 255, 136, 0.8), 0 0 30px rgba(0, 255, 136, 0.6), 0 0 45px rgba(0, 255, 136, 0.4);
-        opacity: 1;
-        transform: scale(1.1);
-        filter: brightness(1.3) contrast(1.2);
-      }
 
       @keyframes futuristicGradient {
         0%, 100% { background-position: 0% 50%; }
@@ -931,30 +915,6 @@
         opacity: 0.8;
       }
 
-      /* Letter Animation */
-      .letter {
-        display: inline-block;
-        animation: letterGlow 2s ease-in-out infinite;
-      }
-
-      .letter:nth-child(odd) {
-        animation-delay: 0.1s;
-      }
-
-      .letter:nth-child(even) {
-        animation-delay: 0.2s;
-      }
-
-      @keyframes letterGlow {
-        0%, 100% { 
-          text-shadow: 0 0 5px var(--cyber-primary), 0 0 10px var(--cyber-primary);
-          transform: scale(1);
-        }
-        50% { 
-          text-shadow: 0 0 10px var(--cyber-primary), 0 0 15px var(--cyber-primary);
-          transform: scale(1.02);
-        }
-      }
 
       @media (max-width: 991.98px) {
         .desktop-sidebar {
@@ -1459,10 +1419,10 @@
           <h1 class="futuristic-title">
             <i class="bi bi-code-slash me-3"></i>
             <div class="title-line">
-              <span class="letter">C</span><span class="letter">O</span><span class="letter">D</span><span class="letter">E</span><span class="letter">S</span><span class="letter">+</span><span class="letter">+</span>
+              CODES++
             </div>
             <div class="title-line">
-              <span class="letter">H</span><span class="letter">a</span><span class="letter">c</span><span class="letter">k</span><span class="letter">a</span><span class="letter">t</span><span class="letter">h</span><span class="letter">o</span><span class="letter">n</span>
+              Hackathon
             </div>
           </h1>
           <p class="subtitle">Centro Organizado de Estudiantes de Sistemas</p>
@@ -1800,6 +1760,9 @@
             <div class="mb-2">
               <strong>Valores desde $1000</strong>
               <p class="mb-1 small text-muted">1 chance → $1000 | 3 chances → $2800 | 4+ chances con regalos</p>
+              <div class="alert alert-success alert-sm mb-0 mt-2">
+                <i class="bi bi-percent me-1"></i><strong>¡FIN DE SEMANA ESPECIAL!</strong> 10% OFF en chances de 4, 6 y 10
+              </div>
             </div>
             <p class="mb-1">
               <i class="bi bi-calendar-event text-primary"></i>
@@ -1987,6 +1950,9 @@
                   <div class="mb-2">
                     <strong>Valores desde $1000</strong>
                     <p class="mb-1 small text-muted">1 chance → $1000 | 3 chances → $2800 | 4+ chances con regalos</p>
+                    <div class="alert alert-success alert-sm mb-0 mt-2">
+                      <i class="bi bi-percent me-1"></i><strong>¡FIN DE SEMANA ESPECIAL!</strong> 10% OFF en chances de 4, 6 y 10
+                    </div>
                   </div>
                   <p class="mb-1">
                     <i class="bi bi-calendar-event text-primary"></i>
@@ -2962,7 +2928,6 @@
 
     <!-- Custom JS -->
     <script src="assets/js/main.js"></script>
-    <script src="assets/js/letter-game.js?v=1.0"></script>
 
     <!-- Back to Top Button -->
     <button
@@ -3245,37 +3210,6 @@
         // Start Matrix effect
         const matrixCleanup = initMatrixRain();
 
-        // Letter illumination effect
-        function initLetterIllumination() {
-          const letters = document.querySelectorAll('.letter');
-          
-          function illuminateLetters() {
-            letters.forEach((letter, index) => {
-              setTimeout(() => {
-                letter.classList.add('illuminate');
-              }, index * 200); // 200ms delay between letters
-            });
-            
-            // Reset after all letters are illuminated
-            setTimeout(() => {
-              letters.forEach(letter => {
-                letter.classList.remove('illuminate');
-              });
-              
-              // Restart the effect
-              setTimeout(() => {
-                illuminateLetters();
-              }, 2000);
-              
-            }, letters.length * 200 + 3000); // Wait for all letters + 3 seconds
-          }
-          
-          // Start the effect
-          illuminateLetters();
-        }
-
-        // Start letter illumination
-        initLetterIllumination();
 
       });
     </script>

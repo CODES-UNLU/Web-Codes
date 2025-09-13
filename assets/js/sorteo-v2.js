@@ -11,7 +11,9 @@ class SorteoApp {
             test: 'https://mpago.la/2n46a5E', // $1 (prueba)
             1: 'https://mpago.la/1rXwpEV', // $1000
             3: 'https://mpago.la/1eSB8pw', // $2800
-            4: 'https://mpago.la/1kM9Q6y'  // $4000
+            4: 'https://mpago.la/1E1UAkf', // $3600 (10% OFF - Antes $4000)
+            6: 'https://mpago.la/1tev5QL', // $4950 (10% OFF - Antes $5500)
+            10: 'https://mpago.la/1i79RHz' // $8100 (10% OFF - Antes $9000)
         };
         this.GOOGLE_SHEETS_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiUKT6nPfnUtE8onqWCg5ojrldjgY8gHmZhmShcmCL-2m1Tbhus4QnXVEbSy8g4WkqTP_LRTX3WvYEfqYeCGwaWbmCrJjaz00m-OTbWOGaQ0gqCmmjbAFkhrjRnPjyIcY27UIB2lIiVCu7lva37awyyruF0kUVELfJR0LxRi2ibmFOt6Cutc7TecE-RhsFBMebc4WURON1SkF6YzjnxKR0F-NRYCEGwh0RIvVSaIF9Dudk0v-X1mVhiQfWmhwXBgXkc30yFpVO9CVGqEsjvwDRfs_hoP5_iyBjn0ZfF&lib=MmjvtSJTRZSQXgdqiqV3z0zrlVmA1-hzz';
         this.init();
@@ -230,9 +232,10 @@ class SorteoApp {
 
         if (select && goToPayContainer && goToPayBtn) {
             const value = select.value;
-            const prices = { test: 1, 1: 1000, 3: 2800, 4: 4000 };
+            const prices = { test: 1, 1: 1000, 3: 2800, 4: 3600, 6: 4950, 10: 8100 };
+            const originalPrices = { test: 1, 1: 1000, 3: 2800, 4: 4000, 6: 5500, 10: 9000 };
 
-            if (["test", "1", "3", "4"].includes(value)) {
+            if (["test", "1", "3", "4", "6", "10"].includes(value)) {
                 goToPayContainer.style.display = "block";
                 goToPayBtn.disabled = false;
                 goToPayBtn.innerHTML = `<i class="bi bi-credit-card me-2"></i> Ir a pagar (${value} chance${value == "1" ? "" : "s"})`;
@@ -244,7 +247,23 @@ class SorteoApp {
                 
                 // Actualizar display
                 if (chancesDisplay) chancesDisplay.textContent = value;
-                if (totalPrecio) totalPrecio.textContent = `$${prices[value]}`;
+                if (totalPrecio) {
+                    // Mostrar precio con descuento si aplica
+                    if (['4', '6', '10'].includes(value)) {
+                        const precioOriginal = originalPrices[value];
+                        const precioConDescuento = prices[value];
+                        const descuento = precioOriginal - precioConDescuento;
+                        totalPrecio.innerHTML = `
+                            <span class="text-success fw-bold">$${precioConDescuento.toLocaleString()}</span>
+                            <small class="text-muted d-block">
+                                <s>Antes $${precioOriginal.toLocaleString()}</s> 
+                                <span class="text-success">(-$${descuento.toLocaleString()})</span>
+                            </small>
+                        `;
+                    } else {
+                        totalPrecio.textContent = `$${prices[value]}`;
+                    }
+                }
             } else {
                 goToPayContainer.style.display = "none";
                 goToPayBtn.disabled = true;
