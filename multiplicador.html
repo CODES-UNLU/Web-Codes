@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Tragamonedas CODES - Centro de Estudiantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <style>
+        /* ========================================
+           SLOT MACHINE STYLES
+           ======================================== */
+        
+        .slot-machine-container {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-machine-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(150, 150, 150, 0.05) 0%, transparent 50%);
+            animation: backgroundPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .slot-machine {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border-radius: 12px;
+            padding: 0.6rem;
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #555;
+            position: relative;
+            max-width: 98vw;
+            max-height: 98vh;
+            width: 100%;
+            z-index: 2;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slot-machine::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #666, #999, #666);
+            border-radius: 22px;
+            z-index: -1;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slot-header {
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .slot-title {
+            color: #39c0c3;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 20px rgba(57, 192, 195, 0.5);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 20px rgba(57, 192, 195, 0.5); }
+            to { text-shadow: 0 0 30px rgba(57, 192, 195, 0.8), 0 0 40px rgba(57, 192, 195, 0.3); }
+        }
+
+        .slot-subtitle {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-input-container {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border-radius: 8px;
+            padding: 0.5rem;
+            border: 2px solid #555;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin: 0.3rem 0;
+            text-align: center;
+        }
+
+        .payment-status {
+            padding: 0.5rem;
+        }
+
+        .status-text {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .status-text.verified {
+            color: #4caf50;
+        }
+
+        .status-text.used {
+            color: #ff9800;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 2px solid #555;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 1rem;
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-label {
+            display: block;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .modal-verify-button {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-verify-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .modal-verify-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .modal-reset-button {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .modal-reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .modal-message {
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        .modal-message.success {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            border: 1px solid #2e7d32;
+        }
+
+        .modal-message.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border: 1px solid #d32f2f;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .payment-label {
+            display: block;
+            color: #39c0c3;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            text-align: center;
+        }
+
+        .payment-label i {
+            margin-right: 0.5rem;
+        }
+
+        .payment-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #555;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #333, #222);
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .payment-input:focus {
+            outline: none;
+            border-color: #39c0c3;
+            box-shadow: 0 0 15px rgba(57, 192, 195, 0.3);
+        }
+
+        .payment-input::placeholder {
+            color: #888;
+        }
+
+        .verify-button {
+            width: 100%;
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+            border: none;
+            color: white;
+            padding: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(57, 192, 195, 0.3);
+        }
+
+        .verify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(57, 192, 195, 0.4);
+        }
+
+        .verify-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-button {
+            width: 100%;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border: none;
+            color: white;
+            padding: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            margin-top: 0.3rem;
+        }
+
+        .reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .message i {
+            margin-right: 0.5rem;
+        }
+
+        .multipliers-table {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border-radius: 8px;
+            padding: 0.4rem;
+            margin: 0.3rem 0;
+            border: 2px solid #555;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .multipliers-title {
+            color: #39c0c3;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 15px rgba(57, 192, 195, 0.5);
+        }
+
+        .payout-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(145deg, #333, #222);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .payout-table thead {
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+        }
+
+        .payout-table th { 
+            color: white; 
+            padding: 0.3rem; 
+            text-align: center; 
+            font-weight: 700; 
+            font-size: 0.8rem; 
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); 
+        }
+
+        .payout-table tbody tr {
+            border-bottom: 1px solid #444;
+            transition: background-color 0.3s ease;
+        }
+
+        .payout-table tbody tr:hover {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+        }
+
+        .payout-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .symbol-cell {
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .symbol-cell img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .multiplier-cell {
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffd23f;
+            text-shadow: 0 0 10px rgba(255, 210, 63, 0.5);
+        }
+
+        .codes-row .symbol-cell {
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            margin: 0.5rem;
+        }
+
+        .logo-circle {
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(57, 192, 195, 0.4);
+        }
+
+        .logo-circle img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            border-radius: 50%;
+            filter: brightness(0) invert(1);
+        }
+
+
+        .reels-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            margin: 0.2rem 0;
+            perspective: 1000px;
+        }
+
+        .reel {
+            width: 90px;
+            height: 100px;
+            background: linear-gradient(145deg, #1e1e2e, #0f0f23);
+            border-radius: 15px;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 6px 15px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .reel::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff00, #ffff00);
+            background-size: 400% 400%;
+            border-radius: 23px;
+            z-index: -1;
+            animation: borderGlow 4s ease infinite;
+        }
+
+        .reel.spinning .reel-symbols {
+            animation: reelSpin 0.1s linear infinite;
+        }
+
+        @keyframes reelSpin {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100px); }
+        }
+
+        .reel-symbols {
+            position: relative;
+            height: 100px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel-symbol {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(145deg, #1e1e2e, #0f0f23);
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reel-symbol img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .reel-symbol:nth-child(2) { top: 100px; }
+        .reel-symbol:nth-child(3) { top: 200px; }
+        .reel-symbol:nth-child(4) { top: 300px; }
+        .reel-symbol:nth-child(5) { top: 400px; }
+        .reel-symbol:nth-child(6) { top: 500px; }
+        .reel-symbol:nth-child(7) { top: 600px; }
+        .reel-symbol:nth-child(8) { top: 700px; }
+        .reel-symbol:nth-child(9) { top: 800px; }
+        .reel-symbol:nth-child(10) { top: 900px; }
+        .reel-symbol:nth-child(11) { top: 1000px; }
+        .reel-symbol:nth-child(12) { top: 1100px; }
+
+
+        /* Symbol styles */
+        .symbol-codes {
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 3px 10px rgba(57, 192, 195, 0.4);
+            margin: 0 auto;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .symbol-codes img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto;
+            filter: brightness(0) invert(1);
+        }
+
+
+        .symbol-diamond {
+            color: #39c0c3;
+            animation: diamondShine 2.5s ease-in-out infinite;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes diamondShine {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        .symbol-clover {
+            color: #4caf50;
+            animation: cloverSway 3s ease-in-out infinite;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes cloverSway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .symbol-cherry {
+            color: #e91e63;
+            animation: cherryBounce 1.8s ease-in-out infinite;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes cherryBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 0.2rem;
+        }
+
+        .spin-button {
+            background: linear-gradient(135deg, #00ffff, #ff00ff, #00ff00, #ffff00);
+            background-size: 400% 400%;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 800;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 10px 30px rgba(0, 255, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: buttonGlow 3s ease infinite;
+        }
+
+        @keyframes buttonGlow {
+            0% { 
+                background-position: 0% 50%;
+                box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+            }
+            50% { 
+                background-position: 100% 50%;
+                box-shadow: 0 15px 40px rgba(255, 0, 255, 0.6);
+            }
+            100% { 
+                background-position: 0% 50%;
+                box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        .spin-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 20px 50px rgba(0, 255, 255, 0.6),
+                0 0 30px rgba(255, 0, 255, 0.4);
+        }
+
+        .spin-button:active {
+            transform: translateY(-1px);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .spin-button:hover::before {
+            left: 100%;
+        }
+
+
+
+
+        .win-display {
+            text-align: center;
+            margin: 1rem 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win-message {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffd23f;
+            text-shadow: 0 0 20px rgba(255, 210, 63, 0.5);
+            animation: winPulse 0.5s ease-in-out;
+        }
+
+        @keyframes winPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .jackpot-message {
+            font-size: 2rem;
+            color: #ff6b35;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.8);
+            animation: jackpotGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes jackpotGlow {
+            from { 
+                text-shadow: 0 0 30px rgba(255, 107, 53, 0.8);
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 40px rgba(255, 107, 53, 1), 0 0 60px rgba(255, 107, 53, 0.5);
+                transform: scale(1.05);
+            }
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff00, #ffff00);
+            border-radius: 50%;
+            animation: particleFloat 4s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 2s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 2.5s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 3s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 3.5s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 4s; }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) rotate(180deg);
+            }
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(57, 192, 195, 0.2);
+            border: 2px solid #39c0c3;
+            color: #39c0c3;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .sound-toggle:hover {
+            background: #39c0c3;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .sound-toggle.muted {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        .sound-toggle.muted:hover {
+            background: #ff6b35;
+            color: white;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .slot-machine {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .slot-title {
+                font-size: 2rem;
+            }
+
+            .payout-table th {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
+
+            .symbol-cell {
+                padding: 0.8rem;
+                font-size: 1.3rem;
+                gap: 5px;
+            }
+
+            .reel {
+                width: 80px;
+                height: 90px;
+            }
+
+            .reel-symbols {
+                height: 90px;
+            }
+
+            .reel-symbol {
+                height: 90px;
+                font-size: 1.8rem;
+            }
+
+            .symbol-codes {
+                width: 55px;
+                height: 55px;
+                font-size: 0.7rem;
+                padding: 6px;
+            }
+
+            .symbol-cell img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .logo-circle {
+                width: 35px;
+                height: 35px;
+            }
+
+            .logo-circle img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .multiplier-cell {
+                padding: 0.8rem;
+                font-size: 1.1rem;
+            }
+
+            .reel {
+                width: 100px;
+                height: 120px;
+            }
+
+            .reel-symbols {
+                height: 120px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .reel-symbol {
+                height: 120px;
+                font-size: 2.5rem;
+            }
+
+            .reel-symbol:nth-child(2) { top: 100px; }
+            .reel-symbol:nth-child(3) { top: 200px; }
+            .reel-symbol:nth-child(4) { top: 300px; }
+            .reel-symbol:nth-child(5) { top: 400px; }
+            .reel-symbol:nth-child(6) { top: 500px; }
+            .reel-symbol:nth-child(7) { top: 600px; }
+            .reel-symbol:nth-child(8) { top: 700px; }
+            .reel-symbol:nth-child(9) { top: 800px; }
+            .reel-symbol:nth-child(10) { top: 900px; }
+            .reel-symbol:nth-child(11) { top: 1000px; }
+            .reel-symbol:nth-child(12) { top: 1100px; }
+
+
+            .symbol-codes {
+                width: 55px;
+                height: 55px;
+                font-size: 0.7rem;
+                padding: 6px;
+            }
+
+            .spin-button {
+                padding: 0.8rem 2rem;
+                font-size: 1.1rem;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .multipliers-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .reel {
+                width: 70px;
+                height: 80px;
+            }
+
+            .reel-symbols {
+                height: 80px;
+            }
+
+            .reel-symbol {
+                height: 80px;
+                font-size: 1.6rem;
+            }
+
+            .symbol-codes {
+                width: 50px;
+                height: 50px;
+                font-size: 0.6rem;
+                padding: 5px;
+            }
+
+            .multiplier-item {
+                padding: 0.6rem;
+            }
+
+            .multiplier-symbol {
+                font-size: 1.8rem;
+                height: 45px;
+                gap: 2px;
+            }
+
+            .multiplier-symbol img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .codes-multiplier .multiplier-symbol {
+                width: 100%;
+                height: 45px;
+                gap: 4px;
+            }
+
+            .logo-circle {
+                width: 30px;
+                height: 30px;
+            }
+
+            .logo-circle img {
+                width: 20px;
+                height: 20px;
+            }
+
+            .multiplier-value {
+                font-size: 1rem;
+            }
+
+            .reels-container {
+                gap: 0.5rem;
+            }
+
+            .reel {
+                width: 90px;
+                height: 110px;
+            }
+
+            .reel-symbols {
+                height: 110px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .reel-symbol {
+                height: 110px;
+                font-size: 2.2rem;
+            }
+
+            .reel-symbol:nth-child(2) { top: 90px; }
+            .reel-symbol:nth-child(3) { top: 180px; }
+            .reel-symbol:nth-child(4) { top: 270px; }
+            .reel-symbol:nth-child(5) { top: 360px; }
+            .reel-symbol:nth-child(6) { top: 450px; }
+            .reel-symbol:nth-child(7) { top: 540px; }
+            .reel-symbol:nth-child(8) { top: 630px; }
+            .reel-symbol:nth-child(9) { top: 720px; }
+            .reel-symbol:nth-child(10) { top: 810px; }
+            .reel-symbol:nth-child(11) { top: 900px; }
+            .reel-symbol:nth-child(12) { top: 990px; }
+
+
+            .symbol-codes {
+                width: 45px;
+                height: 45px;
+                font-size: 0.6rem;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slot-machine-container">
+        <!-- Particles background -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <!-- Sound toggle -->
+        <div class="sound-toggle" id="soundToggle">
+            <i class="fas fa-volume-up"></i>
+        </div>
+
+        <!-- Slot Machine -->
+        <div class="slot-machine">
+            <div class="slot-header">
+                <h1 class="slot-title">🎰 CODES SLOT</h1>
+                <p class="slot-subtitle">¡Gira y multiplica tus chances!</p>
+            </div>
+
+            <!-- Multipliers Table -->
+            <div class="multipliers-table">
+                <h3 class="multipliers-title">🎯 PAYOUT TABLE</h3>
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Symbols</th>
+                            <th>Multiplier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="codes-row">
+                            <td class="symbol-cell">
+                                <div class="logo-circle">
+                                    <img src="assets/images/Logo.svg" alt="CODES" />
+                                </div>
+                                <div class="logo-circle">
+                                    <img src="assets/images/Logo.svg" alt="CODES" />
+                                </div>
+                                <div class="logo-circle">
+                                    <img src="assets/images/Logo.svg" alt="CODES" />
+                                </div>
+                            </td>
+                            <td class="multiplier-cell">x10</td>
+                        </tr>
+                        <tr class="diamond-row">
+                            <td class="symbol-cell">💎💎💎</td>
+                            <td class="multiplier-cell">x5</td>
+                        </tr>
+                        <tr class="clover-row">
+                            <td class="symbol-cell">🍀🍀🍀</td>
+                            <td class="multiplier-cell">x3</td>
+                        </tr>
+                        <tr class="cherry-row">
+                            <td class="symbol-cell">🍒🍒🍒</td>
+                            <td class="multiplier-cell">x2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment Input -->
+            <div class="payment-input-container">
+                <div class="payment-status">
+                    <span id="paymentStatus" class="status-text">
+                        <i class="fas fa-lock"></i> Verifica tu pago para jugar
+                    </span>
+                </div>
+            </div>
+
+            <div class="reels-container">
+                <div class="reel" id="reel1">
+                    <div class="reel-symbols">
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                    </div>
+                </div>
+                <div class="reel" id="reel2">
+                    <div class="reel-symbols">
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                    </div>
+                </div>
+                <div class="reel" id="reel3">
+                    <div class="reel-symbols">
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                        <div class="reel-symbol symbol-codes">
+                            <img src="assets/images/Logo.svg" alt="CODES" />
+                        </div>
+                        <div class="reel-symbol symbol-diamond">💎</div>
+                        <div class="reel-symbol symbol-clover">🍀</div>
+                        <div class="reel-symbol symbol-cherry">🍒</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="win-display" id="winDisplay">
+                <div id="winMessage"></div>
+            </div>
+
+
+            <div class="controls">
+                <button class="spin-button" id="spinButton">
+                    <i class="fas fa-play"></i> GIRAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-credit-card"></i> Verificar Pago</h3>
+                <button id="closeModal" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalMessage" class="modal-message" style="display: none;"></div>
+                <label for="paymentNumber" class="modal-label">
+                    Número de Operación MercadoPago:
+                </label>
+                <input type="text" id="paymentNumber" class="modal-input" placeholder="Ingresa tu número de operación" />
+                <button class="modal-verify-button" id="verifyButton">
+                    <i class="fas fa-check"></i> Verificar
+                </button>
+                <button class="modal-reset-button" id="resetButton" style="display: none;">
+                    <i class="fas fa-refresh"></i> Nuevo Número
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        class SlotMachine {
+            constructor() {
+                this.currentBet = 25;
+                this.isSpinning = false;
+                this.soundEnabled = true;
+                this.paymentVerified = false;
+                this.hasSpun = false;
+                this.currentPaymentNumber = '';
+                this.symbols = ['CODES', '💎', '🍀', '🍒'];
+                // Multiplicadores definidos en checkWin()
+
+                this.initializeElements();
+                this.setupEventListeners();
+                this.updateDisplay();
+            }
+
+            initializeElements() {
+                this.reels = [
+                    document.getElementById('reel1'),
+                    document.getElementById('reel2'),
+                    document.getElementById('reel3')
+                ];
+                this.spinButton = document.getElementById('spinButton');
+                this.winMessage = document.getElementById('winMessage');
+                this.soundToggle = document.getElementById('soundToggle');
+                this.paymentStatus = document.getElementById('paymentStatus');
+                this.modal = document.getElementById('paymentModal');
+                this.closeModalButton = document.getElementById('closeModal');
+                this.modalMessage = document.getElementById('modalMessage');
+                this.paymentInput = document.getElementById('paymentNumber');
+                this.verifyButton = document.getElementById('verifyButton');
+                this.resetButton = document.getElementById('resetButton');
+            }
+
+            setupEventListeners() {
+                this.spinButton.addEventListener('click', () => this.handleSpinClick());
+                this.soundToggle.addEventListener('click', () => this.toggleSound());
+                this.closeModalButton.addEventListener('click', () => this.closeModal());
+                this.verifyButton.addEventListener('click', () => this.verifyPayment());
+                this.resetButton.addEventListener('click', () => this.resetGame());
+                
+                // Cerrar modal al hacer clic fuera de él
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            handleSpinClick() {
+                if (!this.paymentVerified) {
+                    this.openModal();
+                } else if (!this.hasSpun) {
+                    this.spin();
+                }
+            }
+
+            openModal() {
+                this.modal.style.display = 'block';
+                this.modalMessage.style.display = 'none';
+                this.paymentInput.focus();
+            }
+
+            closeModal() {
+                this.modal.style.display = 'none';
+            }
+
+            async verifyPayment() {
+                const paymentNumber = this.paymentInput.value.trim();
+                
+                if (!paymentNumber) {
+                    this.showMessage('Por favor ingresa un número de operación', 'error');
+                    return;
+                }
+
+                this.verifyButton.disabled = true;
+                this.verifyButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+                
+                try {
+                    console.log('Verificando pago:', paymentNumber);
+                    
+                    // Código de prueba temporal
+                    if (paymentNumber === '29071985') {
+                        this.paymentVerified = true;
+                        this.hasSpun = false;
+                        this.currentPaymentNumber = paymentNumber;
+                        this.verifyButton.innerHTML = '<i class="fas fa-check"></i> Verificado (TEST)';
+                        this.showMessage('Pago verificado - Modo de prueba', 'success');
+                        this.closeModal();
+                        this.verifyButton.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                        this.resetButton.style.display = 'block';
+                        this.updateDisplay();
+                        return;
+                    }
+                    
+                    // Verificación real con MercadoPago
+                    const response = await fetch('api/verify-payment.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            paymentId: paymentNumber
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Response:', result);
+                    
+                    if (result.success) {
+                        this.paymentVerified = true;
+                        this.hasSpun = false;
+                        this.currentPaymentNumber = paymentNumber;
+                        this.verifyButton.innerHTML = '<i class="fas fa-check"></i> Verificado';
+                        this.showMessage(result.message, 'success');
+                        this.closeModal();
+                    } else {
+                        this.verifyButton.innerHTML = '<i class="fas fa-times"></i> ' + result.message;
+                        this.showMessage(result.message, 'error');
+                    }
+                    this.verifyButton.style.background = 'linear-gradient(135deg, #4caf50, #2e7d32)';
+                    this.resetButton.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Error verificando pago:', error);
+                    this.verifyButton.innerHTML = '<i class="fas fa-times"></i> Error de conexión';
+                    this.showMessage('Error al verificar el pago. Inténtalo de nuevo.', 'error');
+                    this.verifyButton.disabled = false;
+                }
+                
+                this.updateDisplay();
+            }
+
+            showMessage(message, type) {
+                // Si el modal está abierto, mostrar el mensaje en el modal
+                if (this.modal.style.display === 'block') {
+                    this.modalMessage.style.display = 'block';
+                    this.modalMessage.className = `modal-message ${type}`;
+                    this.modalMessage.innerHTML = `
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
+                    `;
+                } else {
+                    // Si el modal está cerrado, mostrar en el mensaje principal
+                    this.winMessage.innerHTML = `
+                        <div class="message ${type}">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
+                        </div>
+                    `;
+                }
+            }
+
+            resetGame() {
+                this.paymentVerified = false;
+                this.hasSpun = false;
+                this.currentPaymentNumber = '';
+                this.paymentInput.value = '';
+                this.verifyButton.disabled = false;
+                this.verifyButton.innerHTML = '<i class="fas fa-check"></i> Verificar';
+                this.verifyButton.style.background = 'linear-gradient(135deg, #39c0c3, #2a8a8d)';
+                this.resetButton.style.display = 'none';
+                this.winMessage.innerHTML = '';
+                this.modalMessage.style.display = 'none';
+                this.closeModal();
+                this.updateDisplay();
+            }
+
+            async sendToGoogleSheets(paymentNumber, winAmount, results) {
+                // Función para enviar datos a Google Sheets
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    paymentNumber: paymentNumber,
+                    winAmount: winAmount,
+                    multiplier: winAmount / this.currentBet,
+                    won: winAmount > 0,
+                    results: results.join(', '),
+                    symbol1: results[0],
+                    symbol2: results[1],
+                    symbol3: results[2]
+                };
+
+                // Guardar en JSON local primero
+                try {
+                    const localResponse = await fetch('api/save-slot-result.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const localResult = await localResponse.json();
+                    if (localResult.success) {
+                        console.log('Resultado guardado localmente:', localResult);
+                    } else {
+                        console.error('Error guardando localmente:', localResult.message);
+                    }
+                } catch (error) {
+                    console.error('Error enviando a JSON local:', error);
+                }
+
+                // Enviar a Google Sheets
+                console.log('Datos para Google Sheets:', data);
+                
+                // Simular envío (reemplazar con tu endpoint)
+                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                }).catch(error => {
+                    console.log('Error enviando a Google Sheets:', error);
+                });
+            }
+
+            toggleSound() {
+                this.soundEnabled = !this.soundEnabled;
+                const icon = this.soundToggle.querySelector('i');
+                this.soundToggle.classList.toggle('muted', !this.soundEnabled);
+                icon.className = this.soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+            }
+
+            playSound(type) {
+                if (!this.soundEnabled) return;
+                
+                // Crear sonidos usando Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                switch(type) {
+                    case 'spin':
+                        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'win':
+                        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                    case 'jackpot':
+                        oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.5);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        break;
+                }
+            }
+
+            async spin() {
+                if (this.isSpinning || !this.paymentVerified || this.hasSpun) {
+                    if (!this.paymentVerified) {
+                        this.showMessage('Debes verificar tu pago antes de jugar', 'error');
+                    } else if (this.hasSpun) {
+                        this.showMessage('Ya usaste tu giro con este número de operación', 'error');
+                    }
+                    return;
+                }
+
+                this.isSpinning = true;
+                this.spinButton.disabled = true;
+                this.spinButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GIRANDO...';
+
+                // Play spin sound
+                this.playSound('spin');
+
+                // Start spinning animation
+                this.reels.forEach(reel => {
+                    reel.classList.add('spinning');
+                });
+
+                // Wait for spin animation
+                await this.sleep(2000);
+
+                // Stop spinning and get results
+                const results = this.getSpinResults();
+                this.stopReels(results);
+
+                // Wait for reels to stop
+                await this.sleep(1000);
+
+                // Check for wins
+                const winAmount = this.checkWin(results);
+                this.hasSpun = true;
+                
+                if (winAmount > 0) {
+                    this.showWin(winAmount, results);
+                    await this.sendToGoogleSheets(this.currentPaymentNumber, winAmount, results);
+                } else {
+                    this.showWin(0, results);
+                    await this.sendToGoogleSheets(this.currentPaymentNumber, winAmount, results);
+                }
+
+                // Reset UI
+                this.isSpinning = false;
+                this.updateDisplay();
+            }
+
+            getSpinResults() {
+                return this.reels.map(() => {
+                    const randomIndex = Math.floor(Math.random() * this.symbols.length);
+                    return this.symbols[randomIndex];
+                });
+            }
+
+            stopReels(results) {
+                this.reels.forEach((reel, index) => {
+                    reel.classList.remove('spinning');
+                    const symbolsContainer = reel.querySelector('.reel-symbols');
+                    const symbols = symbolsContainer.querySelectorAll('.reel-symbol');
+                    
+                    // Hide all symbols
+                    symbols.forEach(symbol => {
+                        symbol.style.display = 'none';
+                    });
+                    
+                    // Find and show the winning symbol
+                    const symbolIndex = this.symbols.indexOf(results[index]);
+                    if (symbolIndex !== -1) {
+                        // Show the first occurrence of the winning symbol
+                        const winningSymbol = symbols[symbolIndex];
+                        winningSymbol.style.display = 'flex';
+                        winningSymbol.style.position = 'relative';
+                        winningSymbol.style.top = '0';
+                    }
+                });
+            }
+
+            getSymbolClass(symbol) {
+                const classMap = {
+                    'CODES': 'codes',
+                    '💎': 'diamond',
+                    '🍀': 'clover',
+                    '🍒': 'cherry'
+                };
+                return classMap[symbol] || 'codes';
+            }
+
+            checkWin(results) {
+                const [symbol1, symbol2, symbol3] = results;
+                
+                // Only win if all three symbols are the same
+                if (symbol1 === symbol2 && symbol2 === symbol3) {
+                    // Multiplicadores según la tabla de premios
+                    const multipliers = {
+                        'CODES': 10,
+                        '💎': 5,
+                        '🍀': 3,
+                        '🍒': 2
+                    };
+                    
+                    const multiplier = multipliers[symbol1] || 0;
+                    return multiplier * this.currentBet;
+                }
+                
+                return 0;
+            }
+
+            showWin(amount, results = null) {
+                if (amount > 0) {
+                    const multiplier = amount / this.currentBet;
+                    const isCodesJackpot = results && 
+                        results[0] === 'CODES' && 
+                        results[1] === 'CODES' && 
+                        results[2] === 'CODES';
+                    
+                    if (isCodesJackpot) {
+                        this.winMessage.innerHTML = `
+                            <div class="jackpot-message">
+                                <i class="fas fa-crown"></i> ¡JACKPOT CODES! x${multiplier} MULTIPLICADOR!
+                            </div>
+                        `;
+                        this.playSound('jackpot');
+                        this.createConfetti();
+                    } else {
+                        this.winMessage.innerHTML = `
+                            <div class="win-message">
+                                <i class="fas fa-trophy"></i> ¡GANASTE! x${multiplier} MULTIPLICADOR!
+                            </div>
+                        `;
+                        this.playSound('win');
+                    }
+                } else {
+                    this.winMessage.innerHTML = `
+                        <div style="color: #b0b0b0; font-size: 1.2rem;">
+                            <i class="fas fa-frown"></i> ¡Inténtalo de nuevo!
+                        </div>
+                    `;
+                }
+            }
+
+            createConfetti() {
+                const colors = ['#ff6b35', '#ffd23f', '#39c0c3', '#4caf50', '#e91e63'];
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.style.position = 'absolute';
+                        confetti.style.width = '10px';
+                        confetti.style.height = '10px';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.top = '-10px';
+                        confetti.style.borderRadius = '50%';
+                        confetti.style.pointerEvents = 'none';
+                        confetti.style.zIndex = '1000';
+                        
+                        document.body.appendChild(confetti);
+                        
+                        // Animate confetti
+                        confetti.animate([
+                            { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                            { transform: `translateY(${window.innerHeight + 100}px) rotate(720deg)`, opacity: 0 }
+                        ], {
+                            duration: 3000,
+                            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                        }).onfinish = () => {
+                            confetti.remove();
+                        };
+                    }, i * 50);
+                }
+            }
+
+            updateDisplay() {
+                // Update spin button based on payment verification and spin status
+                if (!this.paymentVerified) {
+                    this.spinButton.disabled = false;
+                    this.spinButton.innerHTML = '<i class="fas fa-credit-card"></i> VERIFICAR PAGO';
+                } else if (this.hasSpun) {
+                    this.spinButton.disabled = true;
+                    this.spinButton.innerHTML = '<i class="fas fa-check"></i> GIRO USADO';
+                } else {
+                    this.spinButton.disabled = false;
+                    this.spinButton.innerHTML = '<i class="fas fa-play"></i> GIRAR';
+                }
+
+                // Actualizar el estado del pago
+                if (!this.paymentVerified) {
+                    this.paymentStatus.innerHTML = '<i class="fas fa-lock"></i> Verifica tu pago para jugar';
+                    this.paymentStatus.className = 'status-text';
+                } else if (this.hasSpun) {
+                    this.paymentStatus.innerHTML = '<i class="fas fa-check"></i> Pago verificado - Giro usado';
+                    this.paymentStatus.className = 'status-text used';
+                } else {
+                    this.paymentStatus.innerHTML = '<i class="fas fa-check-circle"></i> Pago verificado - ¡Listo para jugar!';
+                    this.paymentStatus.className = 'status-text verified';
+                }
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize the slot machine when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlotMachine();
+        });
+    </script>
+</body>
+</html>

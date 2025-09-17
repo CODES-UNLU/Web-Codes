@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Estadísticas del Slot Machine - CODES</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <style>
+        .stats-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .stats-card {
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #555;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(57, 192, 195, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #39c0c3;
+            font-size: 1.2rem;
+        }
+        
+        .error {
+            color: #ff6b35;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .file-input {
+            background: linear-gradient(145deg, #333, #222);
+            border: 2px solid #555;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .game-item {
+            background: linear-gradient(145deg, #333, #222);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #39c0c3;
+        }
+        
+        .game-item.won {
+            border-left-color: #4caf50;
+            background: linear-gradient(145deg, #2e4a2e, #1e3a1e);
+        }
+        
+        .game-item.lost {
+            border-left-color: #f44336;
+            background: linear-gradient(145deg, #4a2e2e, #3a1e1e);
+        }
+        
+        .btn-group .btn.active {
+            background: linear-gradient(135deg, #39c0c3, #2a8a8d);
+            border-color: #39c0c3;
+            color: white;
+        }
+        
+        .game-item.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center mb-4">
+                        <h1 class="text-white">
+                            <i class="fas fa-chart-line"></i> Estadísticas del Slot Machine
+                        </h1>
+                        <p class="text-muted">Centro de Estudiantes CODES</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h3 class="text-white mb-4">
+                            <i class="fas fa-sync-alt"></i> Actualización Automática
+                        </h3>
+                        <div class="text-center">
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-clock"></i> Los datos se actualizan automáticamente cada 5 segundos
+                            </p>
+                            <button class="btn btn-outline-info" onclick="loadDataFromFile()">
+                                <i class="fas fa-refresh"></i> Actualizar Ahora
+                            </button>
+                            <button class="btn btn-outline-warning ms-2" onclick="loadSampleData()">
+                                <i class="fas fa-play"></i> Ver Datos de Ejemplo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" id="statsContent">
+                <div class="col-12">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando datos automáticamente...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo basados en tu archivo real
+        const sampleData = [
+            {
+                "timestamp": "2025-09-17T06:15:56.488Z",
+                "paymentNumber": "29071985",
+                "winAmount": 0,
+                "multiplier": 0,
+                "won": false,
+                "results": "🍀, 💎, 🍀",
+                "symbol1": "🍀",
+                "symbol2": "💎",
+                "symbol3": "🍀",
+                "ip": "127.0.0.1",
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            {
+                "timestamp": "2025-09-17T06:16:46.130Z",
+                "paymentNumber": "29071985",
+                "winAmount": 75,
+                "multiplier": 3,
+                "won": true,
+                "results": "🍀, 🍀, 🍀",
+                "symbol1": "🍀",
+                "symbol2": "🍀",
+                "symbol3": "🍀",
+                "ip": "127.0.0.1",
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+        ];
+
+        function loadFromFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor selecciona un archivo JSON');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    console.log('Datos cargados desde archivo:', data);
+                    calculateAndDisplayStats(data);
+                } catch (error) {
+                    console.error('Error al parsear JSON:', error);
+                    showError('Error al leer el archivo JSON: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function loadFromAPI() {
+            try {
+                console.log('Intentando cargar desde API...');
+                const response = await fetch('api/stats.php');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Datos recibidos de API:', data);
+                
+                if (data.success) {
+                    calculateAndDisplayStats(data.stats);
+                } else {
+                    showError(data.message);
+                }
+            } catch (error) {
+                console.error('Error cargando desde API:', error);
+                showError('Error al cargar desde API: ' + error.message + '. Usa el archivo local en su lugar.');
+            }
+        }
+
+        function loadSampleData() {
+            console.log('Cargando datos de ejemplo...');
+            calculateAndDisplayStats(sampleData);
+        }
+
+        function calculateAndDisplayStats(results) {
+            if (!results || !Array.isArray(results)) {
+                showError('Datos inválidos');
+                return;
+            }
+
+            console.log('Calculando estadísticas para:', results);
+
+            // Calcular estadísticas
+            const totalGames = results.length;
+            let wins = 0;
+            let totalWinnings = 0;
+            let biggestWin = 0;
+            const gameDetails = [];
+
+            results.forEach((result, index) => {
+                gameDetails.push({
+                    index: index + 1,
+                    timestamp: result.timestamp,
+                    paymentNumber: result.paymentNumber,
+                    won: result.won,
+                    winAmount: result.winAmount || 0,
+                    multiplier: result.multiplier || 0,
+                    results: result.results,
+                    symbols: [result.symbol1, result.symbol2, result.symbol3]
+                });
+
+                if (result.won === true) {
+                    wins++;
+                    totalWinnings += result.winAmount || 0;
+                    if (result.winAmount > biggestWin) {
+                        biggestWin = result.winAmount;
+                    }
+                }
+            });
+
+            const losses = totalGames - wins;
+            const winRate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) : 0;
+            const averageWin = wins > 0 ? (totalWinnings / wins).toFixed(2) : 0;
+
+            const stats = {
+                totalGames,
+                wins,
+                losses,
+                winRate: winRate + '%',
+                totalWinnings: totalWinnings.toFixed(2),
+                averageWin,
+                biggestWin: biggestWin.toFixed(2),
+                gameDetails
+            };
+
+            console.log('Estadísticas calculadas:', stats);
+            displayStats(stats);
+        }
+
+        function displayStats(stats) {
+            const content = document.getElementById('statsContent');
+            console.log('Mostrando estadísticas:', stats);
+            
+            content.innerHTML = `
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.totalGames}</div>
+                        <div class="stat-label">Total de Juegos</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.wins}</div>
+                        <div class="stat-label">Ganados</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.losses}</div>
+                        <div class="stat-label">Perdidos</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-item">
+                        <div class="stat-value">${stats.winRate}</div>
+                        <div class="stat-label">Tasa de Ganancia</div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h3 class="text-white mb-4">
+                            <i class="fas fa-list"></i> Detalles de Juegos
+                        </h3>
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-outline-info" onclick="filterGames('all')" id="filterAll">
+                                    <i class="fas fa-list"></i> Todos
+                                </button>
+                                <button class="btn btn-outline-success" onclick="filterGames('winners')" id="filterWinners">
+                                    <i class="fas fa-trophy"></i> Solo Ganadores
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="filterGames('losers')" id="filterLosers">
+                                    <i class="fas fa-times"></i> Solo Perdedores
+                                </button>
+                            </div>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto;" id="gamesList">
+                            ${stats.gameDetails.map(game => `
+                                <div class="game-item ${game.won ? 'won' : 'lost'}">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <strong class="text-white">Juego ${game.index}</strong>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <small class="text-muted">${new Date(game.timestamp).toLocaleString()}</small>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <small class="text-muted">Pago: ${game.paymentNumber}</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <span class="text-white">${game.symbols.join(' - ')}</span>
+                                        </div>
+                                        <div class="col-md-3 text-end">
+                                            ${game.won ? 
+                                                `<span class="text-success fw-bold">x${game.multiplier}</span>` : 
+                                                '<span class="text-danger">Perdido</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h3 class="text-white mb-4">
+                            <i class="fas fa-info-circle"></i> Información del Sistema
+                        </h3>
+                        <div class="text-center">
+                            <p class="text-muted">
+                                <i class="fas fa-database"></i> Datos leídos automáticamente desde slot-results.json
+                            </p>
+                            <p class="text-muted">
+                                <i class="fas fa-clock"></i> Última actualización: ${new Date().toLocaleString()}
+                            </p>
+                            <p class="text-success">
+                                <i class="fas fa-sync-alt"></i> Actualización automática cada 5 segundos
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Activar el filtro "Todos" por defecto
+            setTimeout(() => {
+                const filterAllBtn = document.getElementById('filterAll');
+                if (filterAllBtn) {
+                    filterAllBtn.classList.add('active');
+                }
+            }, 100);
+        }
+        
+        function showError(message) {
+            const content = document.getElementById('statsContent');
+            content.innerHTML = `
+                <div class="col-12">
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> ${message}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función para cargar datos automáticamente desde el archivo JSON
+        async function loadDataFromFile() {
+            try {
+                console.log('Cargando datos desde slot-results.json...');
+                const response = await fetch('data/slot-results.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Datos cargados desde archivo:', data);
+                calculateAndDisplayStats(data);
+            } catch (error) {
+                console.error('Error cargando datos del archivo:', error);
+                console.log('Cargando datos de ejemplo como respaldo...');
+                loadSampleData();
+            }
+        }
+
+        // Cargar datos automáticamente al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página cargada, cargando datos automáticamente...');
+            loadDataFromFile();
+        });
+
+        // Función para filtrar juegos
+        function filterGames(filter) {
+            const gameItems = document.querySelectorAll('.game-item');
+            const buttons = document.querySelectorAll('.btn-group .btn');
+            
+            // Remover clase active de todos los botones
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Agregar clase active al botón seleccionado
+            document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1)).classList.add('active');
+            
+            // Filtrar los juegos
+            gameItems.forEach(item => {
+                const isWinner = item.classList.contains('won');
+                const isLoser = item.classList.contains('lost');
+                
+                switch(filter) {
+                    case 'all':
+                        item.classList.remove('hidden');
+                        break;
+                    case 'winners':
+                        if (isWinner) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                        break;
+                    case 'losers':
+                        if (isLoser) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                        break;
+                }
+            });
+        }
+
+        // Actualizar datos cada 5 segundos
+        setInterval(function() {
+            console.log('Actualizando datos automáticamente...');
+            loadDataFromFile();
+        }, 5000);
+    </script>
+</body>
+</html>

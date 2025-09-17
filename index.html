@@ -191,6 +191,46 @@
         box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
       }
       
+      /* Botón del multiplicador personalizado */
+      .multiplicador-btn {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+        border: 2px solid #ffc107 !important;
+        color: white !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3) !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+      
+      .multiplicador-btn::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+        transition: left 0.5s !important;
+      }
+      
+      .multiplicador-btn:hover {
+        background: linear-gradient(135deg, #fd7e14 0%, #e83e8c 100%) !important;
+        border-color: #fd7e14 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4) !important;
+        color: white !important;
+      }
+      
+      .multiplicador-btn:hover::before {
+        left: 100% !important;
+      }
+      
+      .multiplicador-btn:active {
+        transform: translateY(0) !important;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3) !important;
+      }
+      
       /* Responsive styling for Hackathon button */
       @media (max-width: 991.98px) {
         .navbar {
@@ -198,6 +238,7 @@
           min-height: 55px !important;
         }
         .hackathon-btn,
+        .multiplicador-btn,
         .navbar-actions .btn,
         #sidebarToggleBtn,
         .mobile-sidebar-toggle {
@@ -221,6 +262,7 @@
           min-height: 55px !important;
         }
         .hackathon-btn,
+        .multiplicador-btn,
         .navbar-actions .btn,
         #sidebarToggleBtn,
         .mobile-sidebar-toggle {
@@ -265,6 +307,7 @@
       /* Botones del navbar - tamaño exacto */
       .navbar-actions .btn,
       .hackathon-btn,
+      .multiplicador-btn,
       #sidebarToggleBtn,
       .mobile-sidebar-toggle {
         height: 40px !important;
@@ -1269,6 +1312,19 @@
                 <i class="bi bi-code-slash"></i>
               </button>
               <span class="fw-bold text-dark">Hackathon</span>
+            </div>
+            
+            <div class="d-flex flex-column align-items-center">
+              <button
+                class="btn btn-warning btn-sm multiplicador-btn"
+                id="goToMultiplicadorBtn"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                title="Multiplicador de Chances"
+              >
+                <i class="bi bi-dice-6"></i>
+              </button>
+              <span class="fw-bold text-dark">Multiplicador</span>
             </div>
             
             <!-- Mobile Sidebar Toggle -->
@@ -2960,6 +3016,29 @@
           goToHackathonBtn.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0)';
             this.style.boxShadow = '0 4px 15px rgba(40, 167, 69, 0.3)';
+            this.style.transition = 'all 0.3s ease';
+          });
+        }
+        
+        // Botón del multiplicador
+        var goToMultiplicadorBtn = document.getElementById('goToMultiplicadorBtn');
+        if (goToMultiplicadorBtn) {
+          goToMultiplicadorBtn.addEventListener('click', function() {
+            window.location.href = 'multiplicador.html';
+          });
+        }
+        
+        // Efecto hover para el botón del multiplicador (naranja vibrante)
+        if (goToMultiplicadorBtn) {
+          goToMultiplicadorBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 8px 25px rgba(255, 193, 7, 0.4)';
+            this.style.transition = 'all 0.3s ease';
+          });
+          
+          goToMultiplicadorBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 15px rgba(255, 193, 7, 0.3)';
             this.style.transition = 'all 0.3s ease';
           });
         }

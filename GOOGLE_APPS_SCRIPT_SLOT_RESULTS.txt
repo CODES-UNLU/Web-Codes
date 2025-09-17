@@ -1,0 +1,112 @@
+// Google Apps Script para recibir resultados del slot machine
+// Copia este código en tu Google Apps Script y reemplaza YOUR_SCRIPT_ID en multiplicador.html
+
+function doPost(e) {
+  try {
+    // Obtener la hoja de cálculo (reemplaza con tu ID de hoja)
+    const sheetId = 'TU_SHEET_ID_AQUI';
+    const sheet = SpreadsheetApp.openById(sheetId).getSheetByName('Slot Results');
+    
+    // Si la hoja no existe, crearla
+    if (!sheet) {
+      const spreadsheet = SpreadsheetApp.openById(sheetId);
+      const newSheet = spreadsheet.insertSheet('Slot Results');
+      
+      // Agregar encabezados
+      newSheet.getRange(1, 1, 1, 10).setValues([[
+        'Timestamp',
+        'Payment Number', 
+        'Win Amount',
+        'Multiplier',
+        'Won',
+        'Results',
+        'Symbol 1',
+        'Symbol 2', 
+        'Symbol 3',
+        'IP Address'
+      ]]);
+      
+      // Formatear encabezados
+      newSheet.getRange(1, 1, 1, 10).setFontWeight('bold');
+      newSheet.getRange(1, 1, 1, 10).setBackground('#39c0c3');
+      newSheet.getRange(1, 1, 1, 10).setFontColor('white');
+    }
+    
+    // Parsear datos del POST
+    const data = JSON.parse(e.postData.contents);
+    
+    // Agregar fila con los datos
+    const row = [
+      data.timestamp,
+      data.paymentNumber,
+      data.winAmount,
+      data.multiplier,
+      data.won ? 'SÍ' : 'NO',
+      data.results,
+      data.symbol1,
+      data.symbol2,
+      data.symbol3,
+      data.ip || 'unknown'
+    ];
+    
+    sheet.appendRow(row);
+    
+    // Aplicar formato condicional para ganadores
+    const lastRow = sheet.getLastRow();
+    if (data.won) {
+      sheet.getRange(lastRow, 1, 1, 10).setBackground('#d4edda'); // Verde claro para ganadores
+    } else {
+      sheet.getRange(lastRow, 1, 1, 10).setBackground('#f8d7da'); // Rojo claro para perdedores
+    }
+    
+    // Autoajustar columnas
+    sheet.autoResizeColumns(1, 10);
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Datos guardados correctamente',
+        row: lastRow
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    console.error('Error:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        message: 'Error: ' + error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      message: 'Slot Machine Results API - Use POST method',
+      status: 'active'
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Función para obtener estadísticas (opcional)
+function getStats() {
+  const sheetId = 'TU_SHEET_ID_AQUI';
+  const sheet = SpreadsheetApp.openById(sheetId).getSheetByName('Slot Results');
+  
+  if (!sheet) return { error: 'No data found' };
+  
+  const data = sheet.getDataRange().getValues();
+  const totalGames = data.length - 1; // -1 por el encabezado
+  const wins = data.filter(row => row[4] === 'SÍ').length; // Columna 4 = Won
+  const totalWinnings = data.reduce((sum, row) => sum + (row[2] || 0), 0); // Columna 2 = Win Amount
+  
+  return {
+    totalGames,
+    wins,
+    losses: totalGames - wins,
+    winRate: totalGames > 0 ? (wins / totalGames * 100).toFixed(2) + '%' : '0%',
+    totalWinnings: totalWinnings.toFixed(2)
+  };
+}

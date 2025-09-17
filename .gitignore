@@ -1,32 +1,17 @@
-# Archivos de configuración con datos sensibles
-sistema-completo-pagos-template.gs
-GOOGLE_SORTEO_EXISTENTE.gs
-*_REAL.gs
-*_PRODUCTION.gs
+# Archivos de configuración con tokens sensibles
+api/config.php
 
-# Archivos de configuración de base de datos
-config/database.php
+# Archivos de datos sensibles
+data/slot-results.json
+data/sorteo-data.json
 
-# Archivos de log
+# Archivos de respaldo
+*.backup
+*.bak
+
+# Logs
 *.log
 
 # Archivos temporales
 *.tmp
 *.temp
-
-# Archivos de sistema
-.DS_Store
-Thumbs.db
-
-# Archivos de IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Archivos de node_modules (si se agregan en el futuro)
-node_modules/
-
-# Archivos de configuración local
-.env
-.env.local 
