@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Prueba Verificación de Pagos - MercadoPago</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+        .warning {
+            border-left-color: #ff9800;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.warning { background: #ff9800; }
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Prueba de Verificación de Pagos - MercadoPago</h1>
+        <p style="text-align: center; margin-bottom: 30px;">
+            Esta página prueba la verificación de pagos de MercadoPago directamente desde JavaScript
+        </p>
+
+        <div class="info">
+            <h3>ℹ️ Información Importante</h3>
+            <ul>
+                <li><strong>Token configurado:</strong> APP_USR-5908100961878781-080320-3d4cf3e45d4723bffa7e302677cce571-2142366374</li>
+                <li><strong>Fecha mínima:</strong> 17/09/2025</li>
+                <li><strong>Monto mínimo:</strong> $25</li>
+                <li><strong>Estado requerido:</strong> approved</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>1. 🔍 Verificar Pago de MercadoPago</h2>
+            <input type="text" id="paymentId" placeholder="Ingresa el número de operación de MercadoPago" />
+            <button onclick="verificarPago()">Verificar Pago</button>
+            <button onclick="probarPagoTest()">Probar Pago de Prueba</button>
+            <button onclick="limpiarResultados()">Limpiar Resultados</button>
+            
+            <div id="resultados"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 📊 Información del Sistema</h2>
+            <p><strong>Pagos usados (localStorage):</strong> <span id="usedPaymentsCount">0</span></p>
+            <button onclick="verPagosUsados()">Ver Pagos Usados</button>
+            <button onclick="limpiarPagosUsados()">Limpiar Pagos Usados</button>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 🧪 Instrucciones de Prueba</h2>
+            <ol>
+                <li><strong>Pago de prueba:</strong> Usa el botón "Probar Pago de Prueba" para probar con un ID falso</li>
+                <li><strong>Pago real:</strong> Ingresa un número de operación real de MercadoPago</li>
+                <li><strong>Verificación:</strong> El sistema verificará estado, fecha y monto</li>
+                <li><strong>Control de duplicados:</strong> Los pagos usados se guardan en localStorage</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-5908100961878781-090200-9bd7f18e05183969bb57b0169815fff9-2142366374';
+
+        function mostrarResultado(titulo, mensaje, tipo = 'success') {
+            const resultados = document.getElementById('resultados');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const div = document.createElement('div');
+            div.className = `test-section ${tipo}`;
+            div.innerHTML = `
+                <h3>${titulo} <span class="status ${tipo}">${tipo.toUpperCase()}</span></h3>
+                <div class="result">[${timestamp}] ${mensaje}</div>
+            `;
+            
+            resultados.appendChild(div);
+            resultados.scrollTop = resultados.scrollHeight;
+        }
+
+        function limpiarResultados() {
+            document.getElementById('resultados').innerHTML = '';
+        }
+
+        function actualizarContadorPagos() {
+            const usedPayments = JSON.parse(localStorage.getItem('usedPayments') || '[]');
+            document.getElementById('usedPaymentsCount').textContent = usedPayments.length;
+        }
+
+        async function verificarPago() {
+            const paymentId = document.getElementById('paymentId').value.trim();
+            
+            if (!paymentId) {
+                mostrarResultado('Error', 'Por favor ingresa un número de operación', 'error');
+                return;
+            }
+
+            mostrarResultado('Verificando Pago', `Verificando pago: ${paymentId}`, 'warning');
+
+            try {
+                const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.status === 404) {
+                    mostrarResultado('Pago No Encontrado', 'Número de operación no encontrado en MercadoPago', 'error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const paymentData = await response.json();
+                console.log('MercadoPago Response:', paymentData);
+
+                // Verificar que el pago esté aprobado
+                if (paymentData.status !== 'approved') {
+                    mostrarResultado('Pago No Aprobado', `El pago no está aprobado. Estado: ${paymentData.status}`, 'error');
+                    return;
+                }
+
+                // Verificar fecha de creación del pago
+                const dateCreated = paymentData.date_created;
+                const minDate = new Date('2025-09-17T00:00:00.000Z');
+                const paymentDate = new Date(dateCreated);
+
+                if (paymentDate < minDate) {
+                    const formattedDate = paymentDate.toLocaleDateString('es-ES');
+                    mostrarResultado('Fecha Inválida', `El pago del ${formattedDate} no es válido. Debe ser a partir del 17/09/2025`, 'error');
+                    return;
+                }
+
+                // Verificar monto mínimo
+                const amount = paymentData.transaction_amount || 0;
+                if (amount < 25) {
+                    mostrarResultado('Monto Insuficiente', `El monto del pago es insuficiente: $${amount}. Mínimo requerido: $25`, 'error');
+                    return;
+                }
+
+                // Verificar que no se haya usado antes
+                const usedPayments = JSON.parse(localStorage.getItem('usedPayments') || '[]');
+                if (usedPayments.includes(paymentId)) {
+                    mostrarResultado('Pago Ya Usado', 'Este número de operación ya fue utilizado anteriormente', 'error');
+                    return;
+                }
+
+                // Pago válido - agregar a la lista de usados
+                usedPayments.push(paymentId);
+                localStorage.setItem('usedPayments', JSON.stringify(usedPayments));
+                actualizarContadorPagos();
+
+                const formattedPaymentDate = paymentDate.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                mostrarResultado('Pago Verificado Exitosamente', `
+✅ Pago verificado correctamente
+🆔 ID: ${paymentData.id}
+💰 Monto: $${amount}
+📅 Fecha: ${formattedPaymentDate}
+📊 Estado: ${paymentData.status}
+🔗 Descripción: ${paymentData.description || 'N/A'}
+                `, 'success');
+
+            } catch (error) {
+                console.error('Error verificando pago:', error);
+                mostrarResultado('Error de Verificación', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        function probarPagoTest() {
+            const testPaymentId = 'TEST_' + Date.now();
+            document.getElementById('paymentId').value = testPaymentId;
+            mostrarResultado('Pago de Prueba', `ID de prueba generado: ${testPaymentId}`, 'warning');
+        }
+
+        function verPagosUsados() {
+            const usedPayments = JSON.parse(localStorage.getItem('usedPayments') || '[]');
+            if (usedPayments.length === 0) {
+                mostrarResultado('Pagos Usados', 'No hay pagos usados registrados', 'warning');
+            } else {
+                mostrarResultado('Pagos Usados', `Pagos registrados:\n${usedPayments.join('\n')}`, 'success');
+            }
+        }
+
+        function limpiarPagosUsados() {
+            localStorage.removeItem('usedPayments');
+            actualizarContadorPagos();
+            mostrarResultado('Pagos Limpiados', 'Se han eliminado todos los pagos usados del localStorage', 'success');
+        }
+
+        // Actualizar contador al cargar la página
+        window.addEventListener('load', () => {
+            actualizarContadorPagos();
+        });
+    </script>
+</body>
+</html>

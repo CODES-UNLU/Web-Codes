@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Debug MercadoPago API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+        .warning {
+            border-left-color: #ff9800;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.warning { background: #ff9800; }
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .token-section {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug MercadoPago API</h1>
+        <p style="text-align: center; margin-bottom: 30px;">
+            Herramienta para diagnosticar problemas con la API de MercadoPago
+        </p>
+
+        <div class="token-section">
+            <h3>🔑 Configuración de Token</h3>
+            <label for="tokenType">Tipo de Token:</label>
+            <select id="tokenType" onchange="updateToken()">
+                <option value="test">TEST (Desarrollo)</option>
+                <option value="prod">APP_USR (Producción)</option>
+            </select>
+            <input type="text" id="customToken" placeholder="O ingresa tu propio token" />
+            <button onclick="updateToken()">Actualizar Token</button>
+            <div id="currentToken"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>1. 🧪 Prueba de Conectividad</h2>
+            <button onclick="testConnection()">Probar Conexión</button>
+            <button onclick="testToken()">Probar Token</button>
+            <div id="connectionResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 🔍 Verificar Pago Específico</h2>
+            <input type="text" id="paymentId" placeholder="ID del pago de MercadoPago" />
+            <button onclick="verifySpecificPayment()">Verificar Pago</button>
+            <div id="paymentResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 📊 Información de Debug</h2>
+            <button onclick="showDebugInfo()">Mostrar Info de Debug</button>
+            <button onclick="clearAllResults()">Limpiar Todo</button>
+            <div id="debugResults"></div>
+        </div>
+
+        <div class="info">
+            <h3>ℹ️ Información Importante</h3>
+            <ul>
+                <li><strong>Error 401:</strong> Token inválido, expirado o sin permisos</li>
+                <li><strong>Error 404:</strong> Pago no encontrado</li>
+                <li><strong>Error 403:</strong> Token sin permisos para esa operación</li>
+                <li><strong>Token TEST:</strong> Solo funciona con pagos de prueba</li>
+                <li><strong>Token APP_USR:</strong> Funciona con pagos reales</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = 'APP_USR-5908100961878781-090200-9bd7f18e05183969bb57b0169815fff9-2142366374';
+        const tokens = {
+            test: 'TEST-5908100961878781-080320-3d4cf3e45d4723bffa7e302677cce571-2142366374',
+            prod: 'APP_USR-5908100961878781-090200-9bd7f18e05183969bb57b0169815fff9-2142366374'
+        };
+
+        function updateToken() {
+            const tokenType = document.getElementById('tokenType').value;
+            const customToken = document.getElementById('customToken').value.trim();
+            
+            if (customToken) {
+                currentToken = customToken;
+            } else {
+                currentToken = tokens[tokenType];
+            }
+            
+            document.getElementById('currentToken').innerHTML = `
+                <strong>Token actual:</strong> ${currentToken.substring(0, 20)}...
+            `;
+        }
+
+        function mostrarResultado(containerId, titulo, mensaje, tipo = 'success') {
+            const container = document.getElementById(containerId);
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const div = document.createElement('div');
+            div.className = `test-section ${tipo}`;
+            div.innerHTML = `
+                <h3>${titulo} <span class="status ${tipo}">${tipo.toUpperCase()}</span></h3>
+                <div class="result">[${timestamp}] ${mensaje}</div>
+            `;
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearAllResults() {
+            document.getElementById('connectionResults').innerHTML = '';
+            document.getElementById('paymentResults').innerHTML = '';
+            document.getElementById('debugResults').innerHTML = '';
+        }
+
+        async function testConnection() {
+            mostrarResultado('connectionResults', 'Probando Conexión', 'Haciendo petición a la API de MercadoPago...', 'warning');
+            
+            try {
+                const response = await fetch('https://api.mercadopago.com/v1/payments/search?limit=1', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    mostrarResultado('connectionResults', 'Conexión Exitosa', `
+✅ API de MercadoPago responde correctamente
+📊 Status: ${response.status}
+🔑 Token: ${currentToken.substring(0, 20)}...
+📋 Respuesta: ${JSON.stringify(data, null, 2)}
+                    `, 'success');
+                } else {
+                    const errorText = await response.text();
+                    mostrarResultado('connectionResults', 'Error de Conexión', `
+❌ Error HTTP: ${response.status}
+📄 Mensaje: ${errorText}
+🔑 Token usado: ${currentToken.substring(0, 20)}...
+                    `, 'error');
+                }
+            } catch (error) {
+                mostrarResultado('connectionResults', 'Error de Red', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testToken() {
+            mostrarResultado('connectionResults', 'Probando Token', 'Verificando validez del token...', 'warning');
+            
+            try {
+                const response = await fetch('https://api.mercadopago.com/oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `grant_type=client_credentials&client_id=${currentToken}&client_secret=${currentToken}`
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    mostrarResultado('connectionResults', 'Token Válido', `
+✅ Token válido y funcional
+🔑 Tipo: ${currentToken.startsWith('TEST-') ? 'TEST' : 'PRODUCCIÓN'}
+📊 Respuesta: ${JSON.stringify(data, null, 2)}
+                    `, 'success');
+                } else {
+                    const errorText = await response.text();
+                    mostrarResultado('connectionResults', 'Token Inválido', `
+❌ Token no válido
+📄 Error: ${errorText}
+🔑 Token: ${currentToken.substring(0, 20)}...
+                    `, 'error');
+                }
+            } catch (error) {
+                mostrarResultado('connectionResults', 'Error de Token', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function verifySpecificPayment() {
+            const paymentId = document.getElementById('paymentId').value.trim();
+            
+            if (!paymentId) {
+                mostrarResultado('paymentResults', 'Error', 'Por favor ingresa un ID de pago', 'error');
+                return;
+            }
+
+            mostrarResultado('paymentResults', 'Verificando Pago', `Verificando pago: ${paymentId}`, 'warning');
+
+            try {
+                const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+
+                if (response.status === 404) {
+                    mostrarResultado('paymentResults', 'Pago No Encontrado', `
+❌ Pago no encontrado
+🆔 ID: ${paymentId}
+📊 Status: ${response.status}
+                    `, 'error');
+                    return;
+                }
+
+                if (response.status === 401) {
+                    mostrarResultado('paymentResults', 'Error de Autenticación', `
+❌ Error 401 - Token inválido
+🔑 Token: ${currentToken.substring(0, 20)}...
+📄 Respuesta: ${responseText}
+💡 Solución: Verificar que el token sea correcto y tenga permisos
+                    `, 'error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    mostrarResultado('paymentResults', 'Error del Servidor', `
+❌ Error HTTP: ${response.status}
+📄 Respuesta: ${responseText}
+                    `, 'error');
+                    return;
+                }
+
+                const paymentData = JSON.parse(responseText);
+                mostrarResultado('paymentResults', 'Pago Encontrado', `
+✅ Pago verificado exitosamente
+🆔 ID: ${paymentData.id}
+💰 Monto: $${paymentData.transaction_amount}
+📊 Estado: ${paymentData.status}
+📅 Fecha: ${paymentData.date_created}
+🔗 Descripción: ${paymentData.description || 'N/A'}
+📋 Datos completos:
+${JSON.stringify(paymentData, null, 2)}
+                `, 'success');
+
+            } catch (error) {
+                mostrarResultado('paymentResults', 'Error de Verificación', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        function showDebugInfo() {
+            const debugInfo = `
+🔧 INFORMACIÓN DE DEBUG
+
+🌐 User Agent: ${navigator.userAgent}
+🌍 URL: ${window.location.href}
+⏰ Timestamp: ${new Date().toISOString()}
+🔑 Token actual: ${currentToken}
+📊 Tipo de token: ${currentToken.startsWith('TEST-') ? 'TEST' : 'PRODUCCIÓN'}
+
+🔍 POSIBLES CAUSAS DEL ERROR 401:
+1. Token expirado o inválido
+2. Token sin permisos para leer pagos
+3. Token de prueba intentando acceder a pagos reales
+4. Formato incorrecto del token
+5. Problemas de CORS (aunque no debería ser el caso)
+
+💡 SOLUCIONES:
+1. Verificar que el token sea correcto
+2. Generar un nuevo token en MercadoPago
+3. Verificar permisos del token
+4. Usar token TEST para pagos de prueba
+5. Usar token APP_USR para pagos reales
+            `;
+
+            mostrarResultado('debugResults', 'Información de Debug', debugInfo, 'warning');
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            updateToken();
+        });
+    </script>
+</body>
+</html>
