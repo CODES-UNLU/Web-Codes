@@ -1320,11 +1320,13 @@
                 id="goToMultiplicadorBtn"
                 data-bs-toggle="tooltip"
                 data-bs-placement="bottom"
-                title="Multiplicador de Chances"
+                title="Multiplicador de Chances (No disponible en GitHub Pages)"
+                disabled
+                style="opacity: 0.5; cursor: not-allowed;"
               >
                 <i class="bi bi-dice-6"></i>
               </button>
-              <span class="fw-bold text-dark">Multiplicador</span>
+              <span class="fw-bold text-dark" style="opacity: 0.5;">Multiplicador</span>
             </div>
             
             <!-- Mobile Sidebar Toggle -->
@@ -3020,28 +3022,17 @@
           });
         }
         
-        // Botón del multiplicador
+        // Botón del multiplicador (deshabilitado en GitHub Pages)
         var goToMultiplicadorBtn = document.getElementById('goToMultiplicadorBtn');
         if (goToMultiplicadorBtn) {
-          goToMultiplicadorBtn.addEventListener('click', function() {
-            window.location.href = 'multiplicador.html';
+          goToMultiplicadorBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('El Multiplicador no está disponible en GitHub Pages.\nNecesita un servidor con PHP para funcionar.');
           });
         }
         
-        // Efecto hover para el botón del multiplicador (naranja vibrante)
-        if (goToMultiplicadorBtn) {
-          goToMultiplicadorBtn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-            this.style.boxShadow = '0 8px 25px rgba(255, 193, 7, 0.4)';
-            this.style.transition = 'all 0.3s ease';
-          });
-          
-          goToMultiplicadorBtn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-            this.style.boxShadow = '0 4px 15px rgba(255, 193, 7, 0.3)';
-            this.style.transition = 'all 0.3s ease';
-          });
-        }
+        // Efectos hover deshabilitados para el botón del multiplicador (está deshabilitado)
+        // Los efectos hover están deshabilitados porque el botón está deshabilitado
         
         // Detectar si llegó con anchor #rifa-event y hacer scroll automático
         if (window.location.hash === '#rifa-event') {
