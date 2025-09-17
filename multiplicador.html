@@ -1456,53 +1456,43 @@
             }
 
             async sendToGoogleSheets(paymentNumber, winAmount, results) {
-                // Función para enviar datos a Google Sheets
+                // Función para enviar datos a Google Sheets directamente desde JavaScript
                 const data = {
                     timestamp: new Date().toISOString(),
                     paymentNumber: paymentNumber,
-                    winAmount: winAmount,
-                    multiplier: winAmount / this.currentBet,
-                    won: winAmount > 0,
-                    results: results.join(', '),
                     symbol1: results[0],
                     symbol2: results[1],
-                    symbol3: results[2]
+                    symbol3: results[2],
+                    ip: 'unknown', // No disponible en frontend
+                    userAgent: navigator.userAgent
                 };
 
-                // Guardar en JSON local primero
+                console.log('📤 Enviando datos del multiplicador a Google Sheets:', data);
+                
                 try {
-                    const localResponse = await fetch('api/save-slot-result.php', {
+                    // Enviar directamente a Google Apps Script
+                    const response = await fetch('https://script.google.com/macros/s/AKfycbymkkxb5ooIn0kqfiJIOBZzJkZCOcPqUKMHRn6BQcIYSRBPJidIDkprq5waXwPZb2jnjw/exec', {
                         method: 'POST',
+                        mode: 'no-cors', // Importante para Google Apps Script
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(data)
+                        body: JSON.stringify({
+                            action: 'guardarGiro',
+                            data: data
+                        })
                     });
                     
-                    const localResult = await localResponse.json();
-                    if (localResult.success) {
-                        console.log('Resultado guardado localmente:', localResult);
-                    } else {
-                        console.error('Error guardando localmente:', localResult.message);
-                    }
+                    console.log('✅ Datos del multiplicador enviados a Google Sheets');
+                    console.log('📊 Respuesta del servidor:', response);
+                    
+                    // Mostrar confirmación al usuario
+                    this.showMessage('Datos guardados en Google Sheets', 'success');
+                    
                 } catch (error) {
-                    console.error('Error enviando a JSON local:', error);
+                    console.error('❌ Error enviando a Google Sheets:', error);
+                    this.showMessage('Error al guardar en Google Sheets', 'error');
                 }
-
-                // Enviar a Google Sheets
-                console.log('Datos para Google Sheets:', data);
-                
-                // Simular envío (reemplazar con tu endpoint)
-                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                }).catch(error => {
-                    console.log('Error enviando a Google Sheets:', error);
-                });
             }
 
             toggleSound() {

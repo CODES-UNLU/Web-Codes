@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Prueba Multiplicador - JavaScript Puro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+        .warning {
+            border-left-color: #ff9800;
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.warning { background: #ff9800; }
+        .link {
+            color: #81C784;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Prueba del Multiplicador - JavaScript Puro</h1>
+        <p style="text-align: center; margin-bottom: 30px;">
+            Esta página prueba que los datos del multiplicador lleguen correctamente a Google Sheets
+        </p>
+
+        <div class="test-section">
+            <h2>1. 🔗 Información de Conexión</h2>
+            <p><strong>Google Apps Script URL:</strong> <code>AKfycbymkkxb5ooIn0kqfiJIOBZzJkZCOcPqUKMHRn6BQcIYSRBPJidIDkprq5waXwPZb2jnjw</code></p>
+            <p><strong>Google Sheet ID:</strong> <code>1gWzL3GrLhwdOfZer_1SRS80Cq13btFq8H2Mm__B-8MU</code></p>
+            <p><strong>Hoja de destino:</strong> "Giros del Sorteo"</p>
+            <a href="https://docs.google.com/spreadsheets/d/1gWzL3GrLhwdOfZer_1SRS80Cq13btFq8H2Mm__B-8MU/edit" target="_blank" class="link">
+                📊 Abrir Google Sheets
+            </a>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 🧪 Pruebas de Envío</h2>
+            <button onclick="probarConexion()">Probar Conexión</button>
+            <button onclick="probarGiroGanador()">Probar Giro Ganador</button>
+            <button onclick="probarGiroPerdedor()">Probar Giro Perdedor</button>
+            <button onclick="obtenerEstadisticas()">Ver Estadísticas</button>
+            <button onclick="limpiarResultados()">Limpiar Resultados</button>
+            
+            <div id="resultados"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 📊 Instrucciones</h2>
+            <ol>
+                <li>Haz clic en "Probar Conexión" para verificar que el Google Apps Script esté funcionando</li>
+                <li>Haz clic en "Probar Giro Ganador" para enviar un giro con 3 CODES (x10)</li>
+                <li>Haz clic en "Probar Giro Perdedor" para enviar un giro con símbolos diferentes</li>
+                <li>Haz clic en "Ver Estadísticas" para ver los datos actualizados</li>
+                <li>Revisa tu Google Sheets para confirmar que los datos llegaron</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymkkxb5ooIn0kqfiJIOBZzJkZCOcPqUKMHRn6BQcIYSRBPJidIDkprq5waXwPZb2jnjw/exec';
+        const GOOGLE_SHEET_ID = '1gWzL3GrLhwdOfZer_1SRS80Cq13btFq8H2Mm__B-8MU';
+
+        function mostrarResultado(titulo, mensaje, tipo = 'success') {
+            const resultados = document.getElementById('resultados');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const div = document.createElement('div');
+            div.className = `test-section ${tipo}`;
+            div.innerHTML = `
+                <h3>${titulo} <span class="status ${tipo}">${tipo.toUpperCase()}</span></h3>
+                <div class="result">[${timestamp}] ${mensaje}</div>
+            `;
+            
+            resultados.appendChild(div);
+            resultados.scrollTop = resultados.scrollHeight;
+        }
+
+        function limpiarResultados() {
+            document.getElementById('resultados').innerHTML = '';
+        }
+
+        async function probarConexion() {
+            mostrarResultado('Probando Conexión', 'Enviando petición al Google Apps Script...', 'warning');
+            
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=obtenerInfoSistema`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    mostrarResultado('Conexión Exitosa', `
+✅ Servidor respondió correctamente
+📊 Hoja configurada: ${data.configuracion?.SPREADSHEET_ID || 'N/A'}
+📋 Hojas disponibles: ${data.hojasDisponibles?.join(', ') || 'N/A'}
+🔢 Símbolos: ${data.simbolos?.join(', ') || 'N/A'}
+💰 Precio por giro: $${data.precioGiro || 'N/A'}
+                    `, 'success');
+                } else {
+                    mostrarResultado('Error de Conexión', `HTTP ${response.status}: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                mostrarResultado('Error de Conexión', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function enviarGiro(simbolos, descripcion) {
+            const data = {
+                timestamp: new Date().toISOString(),
+                paymentNumber: `TEST_${Date.now()}`,
+                symbol1: simbolos[0],
+                symbol2: simbolos[1],
+                symbol3: simbolos[2],
+                ip: 'unknown',
+                userAgent: navigator.userAgent
+            };
+
+            mostrarResultado(`Enviando ${descripcion}`, `Datos: ${JSON.stringify(data, null, 2)}`, 'warning');
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'guardarGiro',
+                        data: data
+                    })
+                });
+
+                // Con no-cors no podemos leer la respuesta, pero asumimos éxito si no hay error
+                mostrarResultado(`${descripcion} Enviado`, `
+✅ Datos enviados exitosamente
+🆔 ID de prueba: ${data.paymentNumber}
+🎯 Símbolos: ${simbolos.join(', ')}
+⏰ Timestamp: ${data.timestamp}
+                `, 'success');
+
+            } catch (error) {
+                mostrarResultado(`Error Enviando ${descripcion}`, `Error: ${error.message}`, 'error');
+            }
+        }
+
+        function probarGiroGanador() {
+            enviarGiro(['CODES', 'CODES', 'CODES'], 'Giro Ganador (CODES x3)');
+        }
+
+        function probarGiroPerdedor() {
+            enviarGiro(['🍀', '💎', '🍒'], 'Giro Perdedor (Símbolos diferentes)');
+        }
+
+        async function obtenerEstadisticas() {
+            mostrarResultado('Obteniendo Estadísticas', 'Consultando estadísticas del Google Apps Script...', 'warning');
+            
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=obtenerEstadisticas`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    const stats = await response.json();
+                    mostrarResultado('Estadísticas Obtenidas', `
+📊 Total de giros: ${stats.totalGiros || 0}
+🏆 Giros ganadores: ${stats.girosGanadores || 0}
+💸 Giros perdedores: ${stats.girosPerdedores || 0}
+📈 Tasa de ganancia: ${stats.tasaGanancia || 0}%
+💰 Total ganado: $${stats.totalGanado || 0}
+💵 Total recaudado: $${stats.totalRecaudado || 0}
+📊 Ganancia neta: $${stats.gananciaNeta || 0}
+🕒 Última actualización: ${stats.ultimaActualizacion || 'N/A'}
+                    `, 'success');
+                } else {
+                    mostrarResultado('Error Obteniendo Estadísticas', `HTTP ${response.status}: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                mostrarResultado('Error Obteniendo Estadísticas', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-ejecutar prueba de conexión al cargar la página
+        window.addEventListener('load', () => {
+            setTimeout(probarConexion, 1000);
+        });
+    </script>
+</body>
+</html>

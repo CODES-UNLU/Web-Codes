@@ -1320,13 +1320,11 @@
                 id="goToMultiplicadorBtn"
                 data-bs-toggle="tooltip"
                 data-bs-placement="bottom"
-                title="Multiplicador de Chances (No disponible en GitHub Pages)"
-                disabled
-                style="opacity: 0.5; cursor: not-allowed;"
+                title="Multiplicador de Chances - ¡Gira y multiplica tus chances!"
               >
                 <i class="bi bi-dice-6"></i>
               </button>
-              <span class="fw-bold text-dark" style="opacity: 0.5;">Multiplicador</span>
+              <span class="fw-bold text-dark">Multiplicador</span>
             </div>
             
             <!-- Mobile Sidebar Toggle -->
@@ -3022,17 +3020,17 @@
           });
         }
         
-        // Botón del multiplicador (deshabilitado en GitHub Pages)
+        // Botón del multiplicador
         var goToMultiplicadorBtn = document.getElementById('goToMultiplicadorBtn');
         if (goToMultiplicadorBtn) {
           goToMultiplicadorBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            alert('El Multiplicador no está disponible en GitHub Pages.\nNecesita un servidor con PHP para funcionar.');
+            window.location.href = 'multiplicador.html';
           });
         }
         
-        // Efectos hover deshabilitados para el botón del multiplicador (está deshabilitado)
-        // Los efectos hover están deshabilitados porque el botón está deshabilitado
+        // Efectos hover habilitados para el botón del multiplicador
+        // Los efectos hover están definidos en el CSS
         
         // Detectar si llegó con anchor #rifa-event y hacer scroll automático
         if (window.location.hash === '#rifa-event') {
