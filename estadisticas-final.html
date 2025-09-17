@@ -402,15 +402,45 @@
                 const response = await fetch('data/slot-results.json');
                 
                 if (!response.ok) {
+                    // Si no existe el archivo, intentar crear uno vacío
+                    if (response.status === 404) {
+                        console.log('Archivo no encontrado, creando archivo inicial...');
+                        await createInitialFile();
+                        return;
+                    }
                     throw new Error(`Error HTTP: ${response.status}`);
                 }
                 
                 const data = await response.json();
                 console.log('Datos cargados desde archivo:', data);
-                calculateAndDisplayStats(data);
+                
+                // Si el archivo está vacío o no es un array, usar datos de ejemplo
+                if (!Array.isArray(data) || data.length === 0) {
+                    console.log('Archivo vacío, mostrando datos de ejemplo...');
+                    loadSampleData();
+                } else {
+                    calculateAndDisplayStats(data);
+                }
             } catch (error) {
                 console.error('Error cargando datos del archivo:', error);
                 console.log('Cargando datos de ejemplo como respaldo...');
+                loadSampleData();
+            }
+        }
+        
+        // Función para crear archivo inicial
+        async function createInitialFile() {
+            try {
+                const response = await fetch('data/slot-results-initial.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Archivo inicial cargado:', data);
+                    calculateAndDisplayStats(data);
+                } else {
+                    loadSampleData();
+                }
+            } catch (error) {
+                console.error('Error cargando archivo inicial:', error);
                 loadSampleData();
             }
         }

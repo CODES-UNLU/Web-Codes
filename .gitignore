@@ -1,8 +1,9 @@
 # Archivos de configuración con tokens sensibles
 api/config.php
 
-# Archivos de datos sensibles
+# Archivos de datos sensibles (mantener archivo inicial)
 data/slot-results.json
+!data/slot-results-initial.json
 data/sorteo-data.json
 
 # Archivos de respaldo
