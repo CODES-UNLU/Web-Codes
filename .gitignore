@@ -1,18 +1,32 @@
-# Archivos de configuración con tokens sensibles
-api/config.php
+# Archivos con tokens sensibles - NO SUBIR A GITHUB
+debug-mercadopago.html
+test-verificacion-pagos.html
+tokens-config.js
 
-# Archivos de datos sensibles (mantener archivo inicial)
-data/slot-results.json
-!data/slot-results-initial.json
-data/sorteo-data.json
+# Archivos de configuración con tokens
+config-tokens.js
+*.env
+.env*
 
-# Archivos de respaldo
-*.backup
-*.bak
+# Archivos de prueba con datos sensibles
+test-*.html
+debug-*.html
 
-# Logs
+# Logs y archivos temporales
 *.log
-
-# Archivos temporales
 *.tmp
 *.temp
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de backup
+*.bak
+*.backup
