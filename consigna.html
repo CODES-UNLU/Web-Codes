@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Consigna del Hackathon Virtual - CODES++ | Centro de Estudiantes de Sistemas - UNLu</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* Cyber Theme Variables */
+:root {
+  --cyber-primary: #00ff88;
+  --cyber-secondary: #0088ff;
+  --cyber-accent: #ff0088;
+  --cyber-bg: #0a0a0a;
+  --cyber-card: #1a1a1a;
+  --cyber-border: #333;
+  --cyber-glow: 0 0 20px rgba(0, 255, 136, 0.3);
+  --cyber-text: #ffffff;
+  --cyber-text-muted: #888;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Droid Sans", sans-serif;
+  font-size: 16px;
+  padding: 20px;
+  margin: 0;
+  line-height: 1.6;
+	word-wrap: break-word;
+  background: var(--cyber-bg);
+  color: var(--cyber-text);
+  min-height: 100vh;
+}
+
+/* Cyber Animations */
+@keyframes cyberGlow {
+  0% { text-shadow: 0 0 10px var(--cyber-primary), 0 0 20px var(--cyber-primary), 0 0 30px var(--cyber-primary); }
+  100% { text-shadow: 0 0 20px var(--cyber-primary), 0 0 30px var(--cyber-primary), 0 0 40px var(--cyber-primary); }
+}
+
+@keyframes cyberScan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes cyberPulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--cyber-primary), 0 0 15px var(--cyber-primary); }
+  50% { box-shadow: 0 0 0 4px var(--cyber-primary), 0 0 25px var(--cyber-primary); }
+}
+
+@keyframes matrixFlow {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(20px); }
+}
+
+/* Cyber Card Styles */
+.cyber-card {
+  background: var(--cyber-card);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  border: 1px solid var(--cyber-border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyber-primary), transparent);
+  animation: cyberScan 3s infinite;
+}
+
+.cyber-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 255, 136, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-color: var(--cyber-primary);
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+  border-bottom: 2px solid var(--cyber-primary);
+  color: var(--cyber-primary);
+  text-shadow: 0 0 10px var(--cyber-primary);
+  animation: cyberGlow 3s ease-in-out infinite;
+}
+
+h2 {
+  color: var(--cyber-secondary);
+  text-shadow: 0 0 5px var(--cyber-secondary);
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  color: var(--cyber-primary);
+  text-shadow: 0 0 5px var(--cyber-primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+h1, h2, h3 {
+  font-family: 'Inter', sans-serif;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<div class="hero-section" style="text-align: center; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%); color: var(--cyber-text); padding: 80px 40px; margin: 0 0 40px 0; border-bottom: 3px solid var(--cyber-primary); position: relative; overflow: hidden;">
+<div style="position: relative; z-index: 2;">
+<h1 id="%F0%9F%96%A5%EF%B8%8F-hackathon-virtual" style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--cyber-primary); text-shadow: 0 0 20px var(--cyber-primary);">🖥️ HACKATHON VIRTUAL</h1>
+<h2 id="%F0%9F%9B%A0%EF%B8%8F-mvp-para-la-comunidad-en-general" style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);">🛠️ MVP PARA LA COMUNIDAD EN GENERAL</h2>
+<p style="font-size: 1.2rem; color: var(--cyber-text-muted);"><strong>CODES++ - Centro de Estudiantes de Sistemas UNLu</strong></p>
+<hr style="border-color: var(--cyber-primary); margin: 30px 0;">
+<div class="cyber-card" style="background: rgba(26, 26, 26, 0.8); padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--cyber-border);">
+<h3 id="%F0%9F%93%A2-importante--inicio-del-hackathon" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);">📢 IMPORTANTE — INICIO DEL HACKATHON</h3>
+<p style="color: var(--cyber-text-muted);">🕤 <strong style="color: var(--cyber-secondary);">El viernes 26 de septiembre a las 22:00 hs</strong> se notificará a cada equipo cuál de sus 3 propuestas deben desarrollar.</p>
+<p style="color: var(--cyber-text-muted);">Inmediatamente al recibir la notificación, comenzarán las 48 horas de desarrollo del MVP.</p>
+<p style="color: var(--cyber-text-muted);">⚡ <strong style="color: var(--cyber-accent);">Es fundamental que estén todos los integrantes disponibles a esa hora para comenzar coordinados.</strong></p>
+</div>
+</div>
+</div>
+<h2 id="%F0%9F%8E%AF-consigna-del-hackathon">🎯 Consigna del Hackathon</h2>
+<div class="cyber-card">
+<h3 id="objetivo" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>Objetivo:</strong></h3>
+<p style="color: var(--cyber-text-muted);">Cada equipo deberá presentar <strong style="color: var(--cyber-secondary);">3 propuestas distintas</strong> que resuelvan un problema real de la comunidad local mediante soluciones digitales (app, web, sistema o herramienta tecnológica).</p>
+<p style="color: var(--cyber-text-muted);">Las propuestas deben ser <strong style="color: var(--cyber-accent);">viables, útiles y generar impacto positivo</strong> en la vida cotidiana de las personas.</p>
+</div>
+
+<div class="cyber-card" style="border: 2px solid var(--cyber-secondary);">
+<h3 id="%F0%9F%93%8B-proceso-de-selecci%C3%B3n" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>📋 Proceso de Selección:</strong></h3>
+<p style="color: var(--cyber-text-muted);">Los equipos deben enviar sus <strong style="color: var(--cyber-primary);">3 propuestas</strong> antes del inicio del hackathon. El día viernes 26 de septiembre a las 22:00 hs, se notificará a cada equipo <strong style="color: var(--cyber-accent);">cuál de sus 3 propuestas deben desarrollar</strong> durante las 48 horas del evento.</p>
+<p style="color: var(--cyber-text-muted);">Esta selección se realizará considerando la viabilidad técnica, el impacto en la comunidad y la originalidad de cada propuesta.</p>
+</div>
+<h2 id="%F0%9F%92%A1-ejemplo-de-mvp">💡 Ejemplo de MVP</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 136, 255, 0.1) 100%); border: 2px solid var(--cyber-primary);">
+<h3 id="problema" style="color: var(--cyber-accent); text-shadow: 0 0 10px var(--cyber-accent);"><strong>Problema:</strong></h3>
+<p style="color: var(--cyber-text-muted);">Falta de comunicación entre vecinos y autoridades locales ante incidentes (calles rotas, luminarias quemadas, basura acumulada, etc.)</p>
+<h3 id="propuesta" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>Propuesta:</strong></h3>
+<p style="color: var(--cyber-text-muted);">Una aplicación móvil donde los vecinos puedan reportar problemas en la vía pública sacando una foto y geolocalizando el incidente.</p>
+<p style="color: var(--cyber-text-muted);">Los reportes se envían automáticamente al área municipal correspondiente y los vecinos pueden ver el estado de resolución de cada caso (pendiente, en curso, resuelto).</p>
+<h3 id="impacto-esperado" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>Impacto esperado:</strong></h3>
+<p style="color: var(--cyber-text-muted);">Mejora en la velocidad de respuesta municipal, mayor participación ciudadana y mejor mantenimiento de los espacios públicos.</p>
+</div>
+<h2 id="%F0%9F%93%81-presentaci%C3%B3n-de-propuestas">📁 Presentación de Propuestas</h2>
+<div class="cyber-card" style="border: 2px solid var(--cyber-secondary);">
+<h3 id="%F0%9F%93%85-plazo-para-env%C3%ADo" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>📅 Plazo para Envío:</strong></h3>
+<p style="color: var(--cyber-text-muted);"><strong style="color: var(--cyber-accent);">Las 3 propuestas deben enviarse ANTES del viernes 26 de septiembre a las 22:00 hs.</strong></p>
+<p style="color: var(--cyber-text-muted);">Pueden enviarlas por email a <strong style="color: var(--cyber-primary);">codes.unlu@gmail.com</strong> o a través del formulario de inscripción.</p>
+
+<h3 id="requisitos-del-repositorio" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>Requisitos del Repositorio:</strong></h3>
+<ul style="color: var(--cyber-text-muted);">
+<li>✅ Crear un repositorio en GitHub público con el nombre de su proyecto</li>
+<li>✅ Agregar como colaborador al usuario <strong style="color: var(--cyber-secondary);"><code>codes-unlu</code></strong></li>
+<li>✅ Organizar el contenido de forma clara y profesional</li>
+</ul>
+<h3 id="cada-propuesta-debe-incluir" style="color: var(--cyber-accent); text-shadow: 0 0 10px var(--cyber-accent);"><strong>Cada propuesta debe incluir:</strong></h3>
+<ul style="color: var(--cyber-text-muted);">
+<li>📝 <strong style="color: var(--cyber-primary);">Descripción del problema</strong> que resuelve</li>
+<li>💡 <strong style="color: var(--cyber-secondary);">Solución propuesta</strong> (MVP)</li>
+<li>👥 <strong style="color: var(--cyber-accent);">Público objetivo</strong></li>
+<li>🎯 <strong style="color: var(--cyber-primary);">Impacto esperado</strong></li>
+</ul>
+</div>
+<h2 id="%F0%9F%93%8C-plazos-importantes">📌 Plazos Importantes</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, var(--cyber-bg) 0%, var(--cyber-card) 100%); border: 2px solid var(--cyber-primary); text-align: center;">
+<h3 id="%F0%9F%93%85-cronograma-del-hackathon" style="color: var(--cyber-primary); text-shadow: 0 0 15px var(--cyber-primary);"><strong>📅 Cronograma del Hackathon</strong></h3>
+<div style="display: flex; justify-content: center; margin: 20px 0;">
+<table style="background: rgba(0, 255, 136, 0.1); border-radius: 10px; padding: 20px; border-collapse: separate; border-spacing: 0; border: 1px solid var(--cyber-border);">
+<thead>
+<tr>
+<th style="padding: 15px; border-bottom: 2px solid var(--cyber-primary); color: var(--cyber-primary);">Fecha</th>
+<th style="padding: 15px; border-bottom: 2px solid var(--cyber-primary); color: var(--cyber-primary);">Hora</th>
+<th style="padding: 15px; border-bottom: 2px solid var(--cyber-primary); color: var(--cyber-primary);">Actividad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);"><strong style="color: var(--cyber-secondary);">Viernes 26/09/2025</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);"><strong style="color: var(--cyber-accent);">22:00 hs</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);">🚀 <strong style="color: var(--cyber-primary);">Notificación de propuesta seleccionada + Inicio del desarrollo</strong></td>
+</tr>
+<tr>
+<td style="padding: 15px; color: var(--cyber-text-muted);"><strong style="color: var(--cyber-secondary);">Domingo 28/09/2025</strong></td>
+<td style="padding: 15px; color: var(--cyber-text-muted);"><strong style="color: var(--cyber-accent);">22:00 hs</strong></td>
+<td style="padding: 15px; color: var(--cyber-text-muted);">📋 <strong style="color: var(--cyber-primary);">Entrega final del MVP</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2 id="%E2%8F%B1%EF%B8%8F-desarrollo-del-mvp">⏱️ Desarrollo del MVP</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, rgba(255, 0, 136, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%); border-left: 5px solid var(--cyber-accent);">
+<h3 id="%E2%8F%B0-tiempo-total-48-horas" style="color: var(--cyber-accent); text-shadow: 0 0 15px var(--cyber-accent);"><strong>⏰ Tiempo Total: 48 horas</strong></h3>
+<p style="color: var(--cyber-text-muted);"><strong style="color: var(--cyber-secondary);">Desde el viernes 26 de septiembre de 2025 a las 22:00 hs (inmediatamente al recibir la notificación de la propuesta seleccionada)</strong><br>
+<strong style="color: var(--cyber-primary);">Hasta el domingo 28 de septiembre de 2025 a las 22:00 hs</strong></p>
+</div>
+<div class="cyber-card" style="border: 2px solid var(--cyber-border);">
+<h3 id="%F0%9F%91%A5-configuraci%C3%B3n-de-equipos" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>👥 Configuración de Equipos</strong></h3>
+<ul style="color: var(--cyber-text-muted);">
+<li><strong style="color: var(--cyber-secondary);">Tamaño:</strong> 3 integrantes (modalidad virtual)</li>
+<li><strong style="color: var(--cyber-accent);">Tecnología:</strong> Libre - pueden usar cualquier lenguaje, framework o herramienta</li>
+<li><strong style="color: var(--cyber-primary);">Documentación:</strong> Deben aclarar en el repositorio qué tecnologías utilizaron</li>
+</ul>
+</div>
+<h2 id="%F0%9F%91%A5-organizaci%C3%B3n-del-equipo">👥 Organización del Equipo</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 136, 255, 0.1) 100%); border: 2px solid var(--cyber-primary);">
+<h3 id="%F0%9F%8E%AF-asignaci%C3%B3n-de-roles-espec%C3%ADficos" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>🎯 Asignación de Roles Específicos:</strong></h3>
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;">
+<div class="cyber-card" style="background: var(--cyber-card); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid var(--cyber-border);">
+<h4 style="color: var(--cyber-primary); margin-top: 0; text-shadow: 0 0 5px var(--cyber-primary);">💻 Desarrollo</h4>
+<p style="color: var(--cyber-text-muted);">Responsable de la codificación y la funcionalidad del MVP.</p>
+</div>
+<div class="cyber-card" style="background: var(--cyber-card); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid var(--cyber-border);">
+<h4 style="color: var(--cyber-secondary); margin-top: 0; text-shadow: 0 0 5px var(--cyber-secondary);">🎨 Diseño/UX</h4>
+<p style="color: var(--cyber-text-muted);">Enfocado en la interfaz de usuario, la experiencia y la usabilidad.</p>
+</div>
+<div class="cyber-card" style="background: var(--cyber-card); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid var(--cyber-border);">
+<h4 style="color: var(--cyber-accent); margin-top: 0; text-shadow: 0 0 5px var(--cyber-accent);">📋 Gestión</h4>
+<p style="color: var(--cyber-text-muted);">Encargado de la organización, comunicación y cumplimiento de plazos.</p>
+</div>
+</div>
+<h3 id="%F0%9F%93%8B-recomendaciones-de-organizaci%C3%B3n" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>📋 Recomendaciones de Organización:</strong></h3>
+<ul style="color: var(--cyber-text-muted);">
+<li>✅ <strong style="color: var(--cyber-primary);">Distribuir tareas</strong> según las fortalezas de cada miembro</li>
+<li>✅ <strong style="color: var(--cyber-secondary);">Mantener comunicación constante</strong> durante las 48 horas</li>
+<li>✅ <strong style="color: var(--cyber-accent);">Asegurar que todos contribuyan</strong> activamente</li>
+</ul>
+</div>
+<h2 id="%F0%9F%93%A6-entregables-finales">📦 Entregables Finales</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, rgba(0, 136, 255, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%); border-left: 5px solid var(--cyber-secondary);">
+<h3 id="%F0%9F%93%8B-cada-equipo-debe-subir-al-repositorio" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>📋 Cada equipo debe subir al repositorio:</strong></h3>
+<h4 id="1-%F0%9F%9A%80-aplicaci%C3%B3n-funcional-mvp" style="color: var(--cyber-primary); text-shadow: 0 0 5px var(--cyber-primary);"><strong>1. 🚀 Aplicación Funcional (MVP)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>Código fuente completo y funcional</li>
+<li>Instrucciones de instalación y ejecución</li>
+</ul>
+<h4 id="2-%F0%9F%93%84-presentaci%C3%B3n-markdown-o-pdf---m%C3%A1ximo-10-p%C3%A1ginas" style="color: var(--cyber-accent); text-shadow: 0 0 5px var(--cyber-accent);"><strong>2. 📄 Presentación (Markdown o PDF - máximo 10 páginas)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>📑 <strong style="color: var(--cyber-primary);">Portada</strong></li>
+<li>🎯 <strong style="color: var(--cyber-secondary);">Problema</strong></li>
+<li>💡 <strong style="color: var(--cyber-accent);">Solución</strong></li>
+<li>⚙️ <strong style="color: var(--cyber-primary);">Funcionalidades principales y el impacto esperado</strong></li>
+<li>👥 <strong style="color: var(--cyber-secondary);">Equipo de trabajo</strong></li>
+<li>📸 <strong style="color: var(--cyber-accent);">Demostración del MVP:</strong> Capturas de pantalla y descripciones paso a paso</li>
+</ul>
+<h4 id="3-%F0%9F%8E%A5-demo-en-video-opcional" style="color: var(--cyber-primary); text-shadow: 0 0 5px var(--cyber-primary);"><strong>3. 🎥 Demo en Video (Opcional)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>Si les sobra tiempo, pueden subir un video de máximo 5 minutos</li>
+<li>Plataformas sugeridas: YouTube, Google Drive, etc.</li>
+<li>Adjuntar el enlace en el repositorio</li>
+</ul>
+</div>
+<h2 id="%F0%9F%93%82-estructura-y-documentaci%C3%B3n-del-repositorio">📂 Estructura y Documentación del Repositorio</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, rgba(255, 0, 136, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%); border: 2px solid var(--cyber-accent);">
+<h3 id="%F0%9F%93%8B-el-repositorio-debe-estar-organizado-de-forma-clara-y-profesional" style="color: var(--cyber-accent); text-shadow: 0 0 10px var(--cyber-accent);"><strong>📋 El repositorio debe estar organizado de forma clara y profesional</strong></h3>
+<p style="color: var(--cyber-text-muted);"><strong style="color: var(--cyber-primary);">Es indispensable incluir un archivo <code style="color: var(--cyber-secondary); background: var(--cyber-card); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--cyber-border);">README.md</code> en la raíz del proyecto con:</strong></p>
+<ul style="color: var(--cyber-text-muted);">
+<li>📝 <strong style="color: var(--cyber-primary);">Descripción del proyecto:</strong> Un resumen breve de la solución y las funcionalidades principales</li>
+<li>🛠️ <strong style="color: var(--cyber-secondary);">Tecnologías utilizadas:</strong> Detalle de los lenguajes, frameworks y librerías</li>
+<li>⚙️ <strong style="color: var(--cyber-accent);">Instrucciones de instalación y uso:</strong> Pasos claros para que el jurado pueda ejecutar el proyecto de forma local</li>
+<li>🌐 <strong style="color: var(--cyber-primary);">Enlace al despliegue (opcional):</strong> Si subieron la aplicación a un servidor (Netlify, Vercel, Heroku, etc.), incluyan aquí el link para que sea más fácil de probar</li>
+</ul>
+</div>
+<h2 id="%F0%9F%8F%85-criterios-de-evaluaci%C3%B3n">🏅 Criterios de Evaluación</h2>
+<div class="cyber-card" style="background: linear-gradient(135deg, var(--cyber-bg) 0%, var(--cyber-card) 100%); border: 2px solid var(--cyber-primary);">
+<h3 id="%F0%9F%93%8A-tabla-de-ponderaci%C3%B3n" style="text-align: center; color: var(--cyber-primary); text-shadow: 0 0 15px var(--cyber-primary);"><strong>📊 Tabla de Ponderación</strong></h3>
+<div style="display: flex; justify-content: center; margin: 20px 0;">
+<table style="background: rgba(0, 255, 136, 0.1); border-radius: 10px; padding: 20px; border-collapse: separate; border-spacing: 0; border: 1px solid var(--cyber-border);">
+<thead>
+<tr>
+<th style="padding: 15px; border-bottom: 2px solid var(--cyber-primary); color: var(--cyber-primary);">Criterio</th>
+<th style="padding: 15px; border-bottom: 2px solid var(--cyber-primary); color: var(--cyber-primary);">Ponderación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);">🎯 <strong style="color: var(--cyber-secondary);">Impacto en la comunidad</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); text-align: center; color: var(--cyber-accent);"><strong>30%</strong></td>
+</tr>
+<tr>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);">💡 <strong style="color: var(--cyber-primary);">Innovación y creatividad</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); text-align: center; color: var(--cyber-accent);"><strong>25%</strong></td>
+</tr>
+<tr>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);">⚙️ <strong style="color: var(--cyber-secondary);">Viabilidad técnica</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); text-align: center; color: var(--cyber-accent);"><strong>20%</strong></td>
+</tr>
+<tr>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); color: var(--cyber-text-muted);">🎨 <strong style="color: var(--cyber-primary);">Usabilidad del MVP</strong></td>
+<td style="padding: 15px; border-bottom: 1px solid var(--cyber-border); text-align: center; color: var(--cyber-accent);"><strong>15%</strong></td>
+</tr>
+<tr>
+<td style="padding: 15px; color: var(--cyber-text-muted);"><strong style="color: var(--cyber-secondary);">📋 Presentación</strong></td>
+<td style="padding: 15px; text-align: center; color: var(--cyber-accent);"><strong>10%</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cyber-card" style="border-left: 5px solid var(--cyber-primary);">
+<h3 id="%F0%9F%93%8B-explicaci%C3%B3n-detallada-de-criterios" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>📋 Explicación Detallada de Criterios:</strong></h3>
+<h4 id="%F0%9F%8E%AF-impacto-en-la-comunidad-30" style="color: var(--cyber-secondary); text-shadow: 0 0 5px var(--cyber-secondary);"><strong>🎯 Impacto en la comunidad (30%)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>¿Cuántas personas se benefician?</li>
+<li>¿Qué tan significativo es el cambio que genera?</li>
+</ul>
+<h4 id="%F0%9F%92%A1-innovaci%C3%B3n-y-creatividad-25" style="color: var(--cyber-primary); text-shadow: 0 0 5px var(--cyber-primary);"><strong>💡 Innovación y creatividad (25%)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>¿Es una solución nueva o mejora significativamente una existente?</li>
+<li>¿Qué tan original es el enfoque?</li>
+</ul>
+<h4 id="%E2%9A%99%EF%B8%8F-viabilidad-t%C3%A9cnica-20" style="color: var(--cyber-accent); text-shadow: 0 0 5px var(--cyber-accent);"><strong>⚙️ Viabilidad técnica (20%)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>¿Se puede implementar en 48 horas?</li>
+<li>¿La tecnología elegida es apropiada?</li>
+<li>¿El equipo tiene las habilidades necesarias?</li>
+</ul>
+<h4 id="%F0%9F%8E%A8-usabilidad-del-mvp-15" style="color: var(--cyber-secondary); text-shadow: 0 0 5px var(--cyber-secondary);"><strong>🎨 Usabilidad del MVP (15%)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>¿Es fácil de usar?</li>
+<li>¿La interfaz es intuitiva?</li>
+<li>¿Los usuarios pueden completar las tareas principales sin dificultad?</li>
+</ul>
+<h4 id="%F0%9F%93%8B-presentaci%C3%B3n-10" style="color: var(--cyber-primary); text-shadow: 0 0 5px var(--cyber-primary);"><strong>📋 Presentación (10%)</strong></h4>
+<ul style="color: var(--cyber-text-muted);">
+<li>¿Está bien documentado el proyecto?</li>
+<li>¿La presentación es clara y profesional?</li>
+<li>¿Se demuestra correctamente el funcionamiento?</li>
+</ul>
+</div>
+<div class="hero-section" style="text-align: center; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%); color: var(--cyber-text); padding: 80px 40px; margin: 40px 0 0 0; border-top: 3px solid var(--cyber-primary); position: relative; overflow: hidden;">
+<div style="position: relative; z-index: 2;">
+<h2 id="%F0%9F%9A%80-%C2%A1listos-para-el-desaf%C3%ADo" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--cyber-primary); text-shadow: 0 0 20px var(--cyber-primary);">🚀 ¡Listos para el Desafío!</h2>
+<h3 id="48-horas-de-programaci%C3%B3n-virtual" style="color: var(--cyber-secondary); text-shadow: 0 0 10px var(--cyber-secondary);"><strong>48 horas de programación virtual</strong></h3>
+<h3 id="26-28-de-septiembre-de-2025" style="color: var(--cyber-accent); text-shadow: 0 0 10px var(--cyber-accent);"><strong>26-28 de Septiembre de 2025</strong></h3>
+<hr style="border-color: var(--cyber-primary); margin: 30px 0;">
+<div class="cyber-card" style="background: rgba(26, 26, 26, 0.8); padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--cyber-border);">
+<h3 id="centro-organizado-de-estudiantes-de-sistemas---codes" style="color: var(--cyber-primary); text-shadow: 0 0 10px var(--cyber-primary);"><strong>Centro Organizado de Estudiantes de Sistemas - CODES++</strong></h3>
+<p style="color: var(--cyber-text-muted);">📧 <strong style="color: var(--cyber-secondary);">codes.unlu@gmail.com</strong><br>
+🌐 <strong style="color: var(--cyber-accent);">Organizadores del Hackathon Virtual 48H</strong></p>
+</div>
+<hr style="border-color: var(--cyber-primary); margin: 30px 0;">
+<p style="color: var(--cyber-text-muted);"><strong style="color: var(--cyber-primary);">© 2025 CODES++. Todos los derechos reservados.</strong></p>
+</div>
+</div>
+
+</body>
+</html>

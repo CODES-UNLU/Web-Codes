@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Sistema de Jurados - CODES++</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff88;
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+        }
+        .step h3 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+        button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+        }
+        .info {
+            background: rgba(0, 123, 255, 0.2);
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Actualizar Sistema de Jurados</h1>
+        <p style="text-align: center; font-size: 18px; margin-bottom: 30px;">
+            Sistema de actualización para el Hackathon CODES++ 2025
+        </p>
+
+        <div class="step">
+            <h3>📋 Paso 1: Verificar URL Actual</h3>
+            <p>Verificando la URL configurada en el sistema...</p>
+            <button onclick="verificarURL()">🔍 Verificar URL</button>
+            <div id="urlStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🔄 Paso 2: Actualizar Caché del Navegador</h3>
+            <p>Forzar la actualización del caché para usar la nueva URL:</p>
+            <button onclick="actualizarCache()">🔄 Actualizar Caché</button>
+            <div id="cacheStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🧪 Paso 3: Probar Conexión</h3>
+            <p>Probar la conexión con Google Sheets:</p>
+            <button onclick="probarConexion()">🧪 Probar Conexión</button>
+            <div id="testStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🗳️ Paso 4: Probar Voto</h3>
+            <p>Hacer un voto de prueba para verificar que todo funciona:</p>
+            <button onclick="probarVoto()">🗳️ Probar Voto</button>
+            <div id="voteStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>📊 Paso 5: Verificar Google Sheets</h3>
+            <p>Verificar que los datos aparezcan en Google Sheets:</p>
+            <button onclick="abrirGoogleSheets()">📊 Abrir Google Sheets</button>
+            <div id="sheetsStatus" class="status" style="display: none;"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="ejecutarTodosLosPasos()" style="background: #ff6b6b; font-size: 18px; padding: 20px 40px;">
+                🚀 Ejecutar Todos los Pasos
+            </button>
+        </div>
+    </div>
+
+    <!-- Cargar el script de integración -->
+    <script src="jurados-sheets-integration.js"></script>
+
+    <script>
+        // Función para mostrar estado
+        function mostrarEstado(elementId, mensaje, tipo) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `status ${tipo}`;
+            element.innerHTML = mensaje;
+        }
+
+        // Paso 1: Verificar URL
+        function verificarURL() {
+            try {
+                const urlActual = GAS_CONFIG.SCRIPT_URL;
+                const urlCorrecta = 'https://script.google.com/macros/s/AKfycbwlUK9rSdrND1rhOsYNKsgFsSzt6q3fBn9HCvyCBZ_GGCICPZpjU7GA3MOoI1uAGSU/exec';
+                
+                if (urlActual === urlCorrecta) {
+                    mostrarEstado('urlStatus', '✅ URL correcta configurada', 'success');
+                } else {
+                    mostrarEstado('urlStatus', `❌ URL incorrecta. Actual: ${urlActual}`, 'error');
+                }
+            } catch (error) {
+                mostrarEstado('urlStatus', `❌ Error al verificar URL: ${error.message}`, 'error');
+            }
+        }
+
+        // Paso 2: Actualizar caché
+        function actualizarCache() {
+            try {
+                // Forzar recarga del script
+                const script = document.createElement('script');
+                script.src = 'jurados-sheets-integration.js?v=' + Date.now();
+                document.head.appendChild(script);
+                
+                mostrarEstado('cacheStatus', '✅ Caché actualizado. Recargando script...', 'success');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } catch (error) {
+                mostrarEstado('cacheStatus', `❌ Error al actualizar caché: ${error.message}`, 'error');
+            }
+        }
+
+        // Paso 3: Probar conexión
+        async function probarConexion() {
+            try {
+                mostrarEstado('testStatus', '🔄 Probando conexión...', 'info');
+                
+                if (typeof sheetsIntegration !== 'undefined') {
+                    await sheetsIntegration.testConnection();
+                    mostrarEstado('testStatus', '✅ Conexión establecida correctamente', 'success');
+                } else {
+                    mostrarEstado('testStatus', '❌ sheetsIntegration no está disponible', 'error');
+                }
+            } catch (error) {
+                mostrarEstado('testStatus', `❌ Error en conexión: ${error.message}`, 'error');
+            }
+        }
+
+        // Paso 4: Probar voto
+        async function probarVoto() {
+            try {
+                mostrarEstado('voteStatus', '🔄 Enviando voto de prueba...', 'info');
+                
+                if (typeof sheetsIntegration !== 'undefined') {
+                    const resultado = await sheetsIntegration.registrarVoto(
+                        'Test Sistema', 
+                        'Equipo Prueba', 
+                        'test_sistema', 
+                        'Prueba de Sistema', 
+                        'Sistema'
+                    );
+                    
+                    if (resultado.success) {
+                        mostrarEstado('voteStatus', '✅ Voto enviado correctamente a Google Sheets', 'success');
+                    } else {
+                        mostrarEstado('voteStatus', `❌ Error al enviar voto: ${resultado.error || 'Error desconocido'}`, 'error');
+                    }
+                } else {
+                    mostrarEstado('voteStatus', '❌ sheetsIntegration no está disponible', 'error');
+                }
+            } catch (error) {
+                mostrarEstado('voteStatus', `❌ Error al probar voto: ${error.message}`, 'error');
+            }
+        }
+
+        // Paso 5: Abrir Google Sheets
+        function abrirGoogleSheets() {
+            try {
+                const url = 'https://drive.google.com/drive/search?q=Hackathon%20CODES%2B%2B%202025%20-%20Jurados';
+                window.open(url, '_blank');
+                mostrarEstado('sheetsStatus', '✅ Abriendo Google Sheets en nueva pestaña', 'success');
+            } catch (error) {
+                mostrarEstado('sheetsStatus', `❌ Error al abrir Google Sheets: ${error.message}`, 'error');
+            }
+        }
+
+        // Ejecutar todos los pasos
+        async function ejecutarTodosLosPasos() {
+            mostrarEstado('urlStatus', '🔄 Ejecutando todos los pasos...', 'info');
+            
+            // Paso 1
+            verificarURL();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Paso 2
+            actualizarCache();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Paso 3
+            await probarConexion();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Paso 4
+            await probarVoto();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Paso 5
+            abrirGoogleSheets();
+            
+            mostrarEstado('urlStatus', '🎉 Todos los pasos completados. El sistema debería estar funcionando.', 'success');
+        }
+
+        // Verificar URL al cargar la página
+        window.addEventListener('load', function() {
+            setTimeout(verificarURL, 1000);
+        });
+    </script>
+</body>
+</html>

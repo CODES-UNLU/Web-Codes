@@ -221,6 +221,156 @@
         font-weight: 500;
       }
 
+      /* Estilos para el Modal de Confirmación */
+      .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .modal-backdrop {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-header {
+        border-radius: 15px 15px 0 0;
+        background: linear-gradient(135deg, var(--cyber-gray) 0%, var(--cyber-light-gray) 100%);
+      }
+
+      .modal-footer {
+        border-radius: 0 0 15px 15px;
+        background: linear-gradient(135deg, var(--cyber-light-gray) 0%, var(--cyber-gray) 100%);
+      }
+
+      .modal-body {
+        background: var(--cyber-gray);
+      }
+
+      /* Estilos para las tarjetas de resumen de votos */
+      .voto-resumen-card {
+        background: var(--cyber-light-gray);
+        border: 1px solid var(--cyber-border);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .voto-resumen-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--cyber-primary);
+        transition: width 0.3s ease;
+      }
+
+      .voto-resumen-card:hover {
+        border-color: var(--cyber-primary);
+        box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .voto-resumen-card:hover::before {
+        width: 8px;
+      }
+
+      .voto-resumen-card h6 {
+        color: var(--cyber-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .voto-resumen-card .equipo-nombre {
+        color: var(--cyber-secondary);
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .voto-resumen-card .propuesta-titulo {
+        color: var(--cyber-text);
+        font-weight: 500;
+        margin: 0.5rem 0;
+      }
+
+      .voto-resumen-card .propuesta-descripcion {
+        color: var(--cyber-text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .voto-resumen-card .categoria-badge {
+        background: var(--cyber-accent);
+        color: var(--cyber-dark);
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* Animación para el botón de confirmar */
+      #btnConfirmarVotos {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      #btnConfirmarVotos:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+      }
+
+      #btnConfirmarVotos::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      #btnConfirmarVotos:hover::before {
+        left: 100%;
+      }
+
+      /* Efecto de pulso para el ícono de confirmación */
+      .modal-body .bi-shield-check {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       /* ========================================
          NAVBAR STYLES (Del Hackathon)
          ======================================== */
@@ -581,6 +731,11 @@
               <p class="text-center mb-5" style="color: var(--cyber-text-muted);">
                 Sistema completo de evaluación para el Hackathon CODES++
               </p>
+              
+              <!-- Estado de conexión -->
+              <div id="connectionStatus" class="alert alert-info text-center" style="display: none;">
+                <i class="bi bi-cloud-arrow-up me-2"></i>Verificando conexión con Google Sheets...
+              </div>
             </div>
           </div>
 
@@ -594,9 +749,12 @@
                   </h5>
                   <select id="juradoSelector" class="form-select" style="background: var(--cyber-light-gray); border: 1px solid var(--cyber-border); color: var(--cyber-text);">
                     <option value="">Selecciona tu nombre como jurado</option>
-                    <option value="jurado1">Dr. María González - Especialista en IA</option>
-                    <option value="jurado2">Ing. Carlos Rodríguez - Desarrollador Senior</option>
-                    <option value="jurado3">Lic. Ana Martínez - Product Manager</option>
+                    <option value="nehuen_prados">Nehuen Prados</option>
+                    <option value="walter_panessi">Walter Panessi</option>
+                    <option value="pablo_chale">Pablo Chale</option>
+                    <option value="santiago_ricci">Santiago Ricci</option>
+                    <option value="gabriel_tolosa">Gabriel Tolosa</option>
+                    <option value="juan_manuel_fernandez">Juan Manuel Fernandez</option>
                   </select>
                 </div>
               </div>
@@ -657,20 +815,6 @@
           </div>
 
           <!-- Resultados de Propuestas -->
-          <div class="row mt-5">
-            <div class="col-12">
-              <div class="card" style="background: var(--cyber-gray); border: 1px solid var(--cyber-border);">
-                <div class="card-body">
-                  <h5 class="card-title" style="color: var(--cyber-primary);">
-                    <i class="bi bi-graph-up me-2"></i>Resultados de Votación de Propuestas
-                  </h5>
-                  <div id="resultadosContainer">
-                    <p class="text-muted">Los resultados aparecerán aquí una vez que los jurados comiencen a votar.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -757,8 +901,49 @@
       </section>
     </main>
 
+    <!-- Modal de Confirmación de Votos -->
+    <div class="modal fade" id="modalConfirmacionVotos" tabindex="-1" aria-labelledby="modalConfirmacionVotosLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: var(--cyber-gray); border: 2px solid var(--cyber-primary);">
+          <div class="modal-header" style="border-bottom: 1px solid var(--cyber-border);">
+            <h5 class="modal-title" id="modalConfirmacionVotosLabel" style="color: var(--cyber-primary);">
+              <i class="bi bi-check-circle-fill me-2"></i>Confirmar Votación
+            </h5>
+            <button type="button" class="btn-close" onclick="cerrarModal()" aria-label="Close" style="filter: invert(1);"></button>
+          </div>
+          <div class="modal-body" style="color: var(--cyber-text);">
+            <div class="text-center mb-4">
+              <i class="bi bi-shield-check" style="font-size: 3rem; color: var(--cyber-primary);"></i>
+              <h4 class="mt-3" style="color: var(--cyber-primary);">¡Votación Completada!</h4>
+              <p class="text-muted">Por favor, revisa tus votos antes de confirmar:</p>
+            </div>
+            
+            <div id="resumenVotos" class="mb-4">
+              <!-- Aquí se cargarán los votos del jurado -->
+            </div>
+            
+            <div class="alert alert-info" style="background: rgba(0, 212, 255, 0.1); border: 1px solid var(--cyber-secondary); color: var(--cyber-text);">
+              <i class="bi bi-info-circle me-2"></i>
+              <strong>Importante:</strong> Una vez confirmados, los votos no podrán ser modificados.
+            </div>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid var(--cyber-border);">
+            <button type="button" class="btn" data-bs-dismiss="modal" style="background: var(--cyber-light-gray); border: 1px solid var(--cyber-border); color: var(--cyber-text);">
+              <i class="bi bi-arrow-left me-2"></i>Revisar Votos
+            </button>
+            <button type="button" class="btn" id="btnConfirmarVotos" style="background: var(--cyber-primary); border: none; color: var(--cyber-dark); font-weight: 600;">
+              <i class="bi bi-check-circle me-2"></i>Confirmar Votación
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Integración con Google Sheets -->
+    <script src="jurados-sheets-integration.js"></script>
     
     <!-- Sistema de Votación JS -->
     <script>
@@ -766,8 +951,8 @@
       const equipos = [
         {
           id: 'equipo1',
-          nombre: 'Tech Innovators',
-          integrantes: ['Juan Pérez', 'María García', 'Carlos López'],
+          nombre: 'Grupo_crear()',
+          integrantes: ['Matias Rodriguez (Capitán)', 'Tatiana Galeano', 'Santiago Franqueira'],
           pdf: 'https://drive.google.com/file/d/1ABC123DEF456GHI789JKL/view?usp=sharing',
           propuestas: [
             {
@@ -792,8 +977,8 @@
         },
         {
           id: 'equipo2',
-          nombre: 'Code Warriors',
-          integrantes: ['Ana Rodríguez', 'Luis Fernández', 'Sofia Martín'],
+          nombre: 'Los migajeros',
+          integrantes: ['Santiago Sánchez (Capitán)', 'Carpo Fiorence', 'Jeremias Pierini'],
           pdf: 'https://drive.google.com/file/d/1DEF456GHI789JKL012MNO/view?usp=sharing',
           propuestas: [
             {
@@ -818,8 +1003,8 @@
         },
         {
           id: 'equipo3',
-          nombre: 'Digital Pioneers',
-          integrantes: ['Roberto Silva', 'Elena Vargas', 'Diego Morales'],
+          nombre: 'Sam Altman & Co',
+          integrantes: ['Valentino Lavigna (Capitán)', 'Bruno Fanciotti', 'Paola Ponce'],
           pdf: 'https://drive.google.com/file/d/1MNO345PQR678STU901VWX/view?usp=sharing',
           propuestas: [
             {
@@ -846,9 +1031,12 @@
 
       // Jurados
       const jurados = {
-        'jurado1': 'Dr. María González - Especialista en IA',
-        'jurado2': 'Ing. Carlos Rodríguez - Desarrollador Senior',
-        'jurado3': 'Lic. Ana Martínez - Product Manager'
+        'nehuen_prados': 'Nehuen Prados',
+        'walter_panessi': 'Walter Panessi',
+        'pablo_chale': 'Pablo Chale',
+        'santiago_ricci': 'Santiago Ricci',
+        'gabriel_tolosa': 'Gabriel Tolosa',
+        'juan_manuel_fernandez': 'Juan Manuel Fernandez'
       };
 
       // Sistema de votación
@@ -857,58 +1045,13 @@
       let juradoActual = null;
       let modoActual = null; // 'propuestas' o 'calificacion'
 
-      // Funciones globales para ser llamadas desde HTML
+      // Funciones eliminadas - sección de resultados removida
       window.mostrarResultadosParciales = function() {
-        const resultadosContainer = document.getElementById('resultadosContainer');
-        
-        // Calcular votos por propuesta
-        const conteoVotos = {};
-        Object.values(votos).forEach(votosJurado => {
-          Object.values(votosJurado).forEach(propuestaId => {
-            conteoVotos[propuestaId] = (conteoVotos[propuestaId] || 0) + 1;
-          });
-        });
-
-        // Crear tabla de resultados
-        let html = '<div class="table-responsive"><table class="table table-dark table-striped">';
-        html += '<thead><tr><th>Equipo</th><th>Propuesta Ganadora</th><th>Votos</th><th>Estado</th></tr></thead><tbody>';
-
-        equipos.forEach(equipo => {
-          const propuestaGanadora = equipo.propuestas.find(p => conteoVotos[p.id] === Math.max(...equipo.propuestas.map(prop => conteoVotos[prop.id] || 0)));
-          const votosPropuesta = conteoVotos[propuestaGanadora.id] || 0;
-          const esGanadora = votosPropuesta > 0;
-          
-          html += `<tr>
-            <td><strong>${equipo.nombre}</strong></td>
-            <td>${propuestaGanadora.titulo}</td>
-            <td><span class="badge bg-primary">${votosPropuesta}</span></td>
-            <td>${esGanadora ? '<span class="badge bg-success">Seleccionada</span>' : '<span class="badge bg-secondary">Sin votos</span>'}</td>
-          </tr>`;
-        });
-
-        html += '</tbody></table></div>';
-
-        // Mostrar resumen
-        const totalVotos = Object.values(conteoVotos).reduce((sum, count) => sum + count, 0);
-        const juradosQueHanVotado = Object.keys(votos).length;
-        const totalJurados = Object.keys(jurados).length;
-        
-        html += `<div class="mt-3">
-          <div class="alert alert-info">
-            <strong>Resultados Parciales:</strong> ${totalVotos} votos registrados de ${juradosQueHanVotado} jurados (${totalJurados} total).
-          </div>
-          <div class="text-center">
-            <button class="btn" style="background: var(--cyber-accent); border: none; color: var(--cyber-dark); font-weight: 600;" onclick="actualizarResultados()">
-              <i class="bi bi-arrow-clockwise me-2"></i>Actualizar Resultados
-            </button>
-          </div>
-        </div>`;
-
-        resultadosContainer.innerHTML = html;
+        console.log('📊 Función de resultados removida - sistema simplificado');
       };
 
       window.actualizarResultados = function() {
-        actualizarResultados();
+        console.log('📊 Función de actualización removida - sistema simplificado');
       };
 
       window.mostrarSeccion = function(tipo) {
@@ -917,7 +1060,8 @@
 
       // Función para mostrar resultados finales cuando todos han votado
       function mostrarResultadosFinales() {
-        const resultadosContainer = document.getElementById('resultadosContainer');
+        console.log('📊 Función de resultados finales removida - sistema simplificado');
+        return;
         
         // Calcular votos por propuesta
         const conteoVotos = {};
@@ -980,7 +1124,7 @@
       const proyectosFinales = [
         {
           id: 'proyecto1',
-          equipo: 'Tech Innovators',
+          equipo: 'Grupo_crear()',
           titulo: 'App de Gestión de Inventario Inteligente',
           descripcion: 'Sistema completo desarrollado con IA para predecir demanda y optimizar stock automáticamente.',
           tecnologias: ['React', 'Node.js', 'Python', 'TensorFlow', 'MongoDB'],
@@ -989,7 +1133,7 @@
         },
         {
           id: 'proyecto2',
-          equipo: 'Code Warriors',
+          equipo: 'Los migajeros',
           titulo: 'App de Salud Mental y Bienestar',
           descripcion: 'Herramienta completa con ejercicios de mindfulness y seguimiento del estado emocional.',
           tecnologias: ['Vue.js', 'Express', 'PostgreSQL', 'JWT', 'Chart.js'],
@@ -998,7 +1142,7 @@
         },
         {
           id: 'proyecto3',
-          equipo: 'Digital Pioneers',
+          equipo: 'Sam Altman & Co',
           titulo: 'Sistema de Predicción de Tráfico',
           descripcion: 'IA avanzada que analiza patrones de tráfico y sugiere rutas óptimas en tiempo real.',
           tecnologias: ['Angular', 'Django', 'Python', 'OpenCV', 'Redis'],
@@ -1014,12 +1158,14 @@
         const btnCalificarProyectos = document.getElementById('btnCalificarProyectos');
 
         // Manejar selección de jurado
-        juradoSelector.addEventListener('change', function() {
+        juradoSelector.addEventListener('change', async function() {
           juradoActual = this.value;
           if (juradoActual && modoActual) {
+            // Sistema simplificado - solo escritura
+            
             if (modoActual === 'propuestas') {
               cargarEquipos();
-              actualizarResultados();
+              // actualizarResultados(); // Removido - sistema simplificado
             } else if (modoActual === 'calificacion') {
               cargarProyectos();
               actualizarRanking();
@@ -1028,15 +1174,18 @@
         });
 
         // Manejar botón de selección de propuestas
-        btnSeleccionarPropuestas.addEventListener('click', function() {
+        btnSeleccionarPropuestas.addEventListener('click', async function() {
           if (!juradoActual) {
             alert('Por favor selecciona un jurado primero.');
             return;
           }
           modoActual = 'propuestas';
           mostrarSeccion('propuestas');
+          
+          // Sistema simplificado - solo escritura
+          
           cargarEquipos();
-          actualizarResultados();
+          // actualizarResultados(); // Removido - sistema simplificado
           
           // Scroll hacia la sección de propuestas
           setTimeout(() => {
@@ -1101,7 +1250,7 @@
                       <h5 class="card-title mb-0" style="color: var(--cyber-primary);">
                         <i class="bi bi-people me-2"></i>${equipo.nombre}
                       </h5>
-                      <small class="text-muted">${equipo.integrantes.join(', ')}</small>
+                      <small style="color: var(--cyber-secondary); font-weight: 500;">${equipo.integrantes.join(', ')}</small>
                     </div>
                     <a href="${equipo.pdf}" target="_blank" class="btn btn-sm" style="background: var(--cyber-secondary); border: none; color: var(--cyber-dark); font-weight: 600;">
                       <i class="bi bi-file-earmark-pdf me-1"></i>Ver PDF
@@ -1143,7 +1292,7 @@
           });
         }
 
-        function votar(equipoId, propuestaId) {
+        async function votar(equipoId, propuestaId) {
           if (!juradoActual) {
             alert('Por favor selecciona un jurado primero.');
             return;
@@ -1163,14 +1312,50 @@
             votos[juradoActual][equipoId] = propuestaId;
           }
 
-          // Actualizar interfaz
-          actualizarBotonesVotacion();
-          actualizarResultados();
-          
-          // Mostrar confirmación
+          // Obtener datos de la propuesta
           const equipo = equipos.find(e => e.id === equipoId);
           const propuesta = equipo.propuestas.find(p => p.id === propuestaId);
-          alert(`¡Voto registrado! Has seleccionado "${propuesta.titulo}" del equipo ${equipo.nombre}.`);
+          
+          // SIMULACIÓN: Registrar voto en Google Sheets
+          console.log('🗳️ SIMULANDO VOTO EN GOOGLE SHEETS:');
+          console.log('📊 Datos del voto:');
+          console.log('  - Jurado:', jurados[juradoActual]);
+          console.log('  - Equipo:', equipo.nombre);
+          console.log('  - Propuesta ID:', propuestaId);
+          console.log('  - Título:', propuesta.titulo);
+          console.log('  - Categoría:', propuesta.categoria);
+          console.log('  - Timestamp:', new Date().toISOString());
+          
+          // Guardar voto localmente (sin enviar a Google Sheets aún)
+          try {
+            const votoData = {
+              jurado: jurados[juradoActual],
+              equipo: equipo.nombre,
+              propuestaId: propuestaId,
+              titulo: propuesta.titulo,
+              categoria: propuesta.categoria,
+              timestamp: new Date().toISOString(),
+              fecha: new Date().toLocaleString('es-ES'),
+              confirmado: false // Marcar como no confirmado inicialmente
+            };
+            
+            // Guardar localmente sin enviar a Google Sheets
+            guardarVotoLocal(votoData);
+            console.log('💾 Voto guardado localmente (pendiente de confirmación)');
+            
+          } catch (error) {
+            console.error('❌ Error al procesar voto:', error);
+          }
+          
+          // Verificar si se completó la votación para mostrar el modal
+          verificarVotacionCompleta();
+
+          // Actualizar interfaz
+          actualizarBotonesVotacion();
+          // actualizarResultados(); // Removido - sistema simplificado
+          
+          // Mostrar confirmación silenciosa (sin alert)
+          console.log(`✅ Voto registrado: "${propuesta.titulo}" del equipo ${equipo.nombre}`);
         }
 
         function actualizarBotonesVotacion() {
@@ -1190,119 +1375,36 @@
           });
         }
 
-        function actualizarResultados() {
-          const resultadosContainer = document.getElementById('resultadosContainer');
-          
+        function verificarVotacionCompleta() {
           if (!juradoActual) {
-            resultadosContainer.innerHTML = '<p class="text-muted">Los resultados aparecerán aquí una vez que los jurados comiencen a votar.</p>';
             return;
           }
 
           // Verificar si el jurado actual ha completado su votación
           const votosJuradoActual = votos[juradoActual] || {};
-          const equiposVotados = Object.keys(votosJuradoActual).length;
+          const equiposVotados = Object.keys(votosJuradoActual).filter(key => key !== 'confirmado' && key !== 'fechaConfirmacion').length;
           const totalEquipos = equipos.length;
           const haCompletadoVotacion = equiposVotados === totalEquipos;
 
-          // Calcular votos por propuesta
-          const conteoVotos = {};
-          Object.values(votos).forEach(votosJurado => {
-            Object.values(votosJurado).forEach(propuestaId => {
-              conteoVotos[propuestaId] = (conteoVotos[propuestaId] || 0) + 1;
-            });
-          });
+          // Debug logs
+          console.log('🔍 DEBUG verificarVotacionCompleta:');
+          console.log('  - Jurado actual:', juradoActual);
+          console.log('  - Votos del jurado:', votosJuradoActual);
+          console.log('  - Equipos votados:', equiposVotados);
+          console.log('  - Total equipos:', totalEquipos);
+          console.log('  - Ha completado votación:', haCompletadoVotacion);
+          console.log('  - Confirmado:', votosJuradoActual.confirmado);
 
-          // Contar jurados que han votado
-          const juradosQueHanVotado = Object.keys(votos).length;
-          const totalJurados = Object.keys(jurados).length;
-
-          if (Object.keys(conteoVotos).length === 0) {
-            resultadosContainer.innerHTML = '<p class="text-muted">Aún no hay votos registrados.</p>';
+          // Si el jurado ha completado su votación y no ha confirmado, mostrar modal
+          if (haCompletadoVotacion && !votosJuradoActual.confirmado) {
+            console.log('🎯 Mostrando modal de confirmación');
+            mostrarModalConfirmacionVotos();
             return;
           }
-
-          // Si el jurado ha completado su votación, verificar si todos han votado
-          if (haCompletadoVotacion) {
-            // Si todos los jurados han votado, mostrar resultados finales directamente
-            if (juradosQueHanVotado >= totalJurados) {
-              mostrarResultadosFinales();
-              return;
-            }
-            
-            // Si no todos han votado, mostrar pantalla de espera
-            let html = `
-              <div class="text-center py-4">
-                <div class="mb-4">
-                  <i class="bi bi-check-circle-fill" style="font-size: 3rem; color: var(--cyber-primary);"></i>
-                </div>
-                <h4 style="color: var(--cyber-primary);">¡Votación Completada!</h4>
-                <p class="mb-4" style="color: var(--cyber-text-muted);">
-                  Has terminado de votar por todas las propuestas. 
-                  Esperando que los demás jurados voten... (${juradosQueHanVotado}/${totalJurados})
-                </p>
-                <div class="mb-4">
-                  <div class="progress" style="height: 8px; background: var(--cyber-light-gray);">
-                    <div class="progress-bar" style="background: var(--cyber-primary); width: ${(juradosQueHanVotado / totalJurados) * 100}%;"></div>
-                  </div>
-                  <small class="text-muted">${juradosQueHanVotado} de ${totalJurados} jurados han votado</small>
-                </div>
-                <button class="btn" style="background: var(--cyber-secondary); border: none; color: var(--cyber-dark); font-weight: 600;" onclick="mostrarResultadosParciales()">
-                  <i class="bi bi-graph-up me-2"></i>Ver Resultados Parciales
-                </button>
-              </div>
-            `;
-            resultadosContainer.innerHTML = html;
-            return;
-          }
-
-          // Mostrar resultados normales si no ha completado
-          mostrarResultadosNormales();
         }
 
 
-        function mostrarResultadosNormales() {
-          const resultadosContainer = document.getElementById('resultadosContainer');
-          
-          // Calcular votos por propuesta
-          const conteoVotos = {};
-          Object.values(votos).forEach(votosJurado => {
-            Object.values(votosJurado).forEach(propuestaId => {
-              conteoVotos[propuestaId] = (conteoVotos[propuestaId] || 0) + 1;
-            });
-          });
-
-          // Crear tabla de resultados
-          let html = '<div class="table-responsive"><table class="table table-dark table-striped">';
-          html += '<thead><tr><th>Equipo</th><th>Propuesta Ganadora</th><th>Votos</th><th>Estado</th></tr></thead><tbody>';
-
-          equipos.forEach(equipo => {
-            const propuestaGanadora = equipo.propuestas.find(p => conteoVotos[p.id] === Math.max(...equipo.propuestas.map(prop => conteoVotos[prop.id] || 0)));
-            const votosPropuesta = conteoVotos[propuestaGanadora.id] || 0;
-            const esGanadora = votosPropuesta > 0;
-            
-            html += `<tr>
-              <td><strong>${equipo.nombre}</strong></td>
-              <td>${propuestaGanadora.titulo}</td>
-              <td><span class="badge bg-primary">${votosPropuesta}</span></td>
-              <td>${esGanadora ? '<span class="badge bg-success">Seleccionada</span>' : '<span class="badge bg-secondary">Sin votos</span>'}</td>
-            </tr>`;
-          });
-
-          html += '</tbody></table></div>';
-
-          // Mostrar resumen
-          const totalVotos = Object.values(conteoVotos).reduce((sum, count) => sum + count, 0);
-          const juradosQueHanVotado = Object.keys(votos).length;
-          const totalJurados = Object.keys(jurados).length;
-          
-          html += `<div class="mt-3">
-            <div class="alert alert-info">
-              <strong>Resumen:</strong> ${totalVotos} votos registrados de ${juradosQueHanVotado} jurados.
-            </div>
-          </div>`;
-
-          resultadosContainer.innerHTML = html;
-        }
+        // Función eliminada - sección de resultados removida
 
         function cargarProyectos() {
           const proyectosContainer = document.getElementById('proyectosContainer');
@@ -1581,6 +1683,282 @@
 
           rankingContainer.innerHTML = html;
         }
+      });
+
+      // Función para enviar voto a Google Sheets
+      function enviarVotoAGoogleSheets(votoData) {
+        try {
+          // URL de Google Apps Script configurada
+          const baseUrl = 'https://script.google.com/macros/s/AKfycbwOPz-5P0OY1v_ytk1xlz5IxT6n3V6zuHPLRrTJGMpAITqE85Jlv3jwao1idUtWpMTmGw/exec';
+          
+          // Si no se ha configurado la URL, usar modo local
+          if (baseUrl === 'TU_GOOGLE_APPS_SCRIPT_URL_AQUI') {
+            console.warn('⚠️ URL de Google Apps Script no configurada, guardando localmente');
+            guardarVotoLocal(votoData);
+            mostrarNotificacion('⚠️ URL no configurada - Voto guardado localmente');
+            return;
+          }
+          
+          const params = new URLSearchParams({
+            jurado: votoData.jurado,
+            equipo: votoData.equipo,
+            propuestaId: votoData.propuestaId,
+            titulo: votoData.titulo,
+            categoria: votoData.categoria,
+            timestamp: votoData.timestamp,
+            confirmado: votoData.confirmado || 'false'
+          });
+          
+          const url = `${baseUrl}?${params.toString()}`;
+          
+          console.log('📤 Enviando voto a Google Sheets...');
+          console.log('URL:', url);
+          console.log('Datos:', votoData);
+          
+          // Crear iframe oculto para enviar
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = url;
+          document.body.appendChild(iframe);
+          
+          // Remover iframe después de 3 segundos
+          setTimeout(() => {
+            if (iframe.parentElement) {
+              iframe.remove();
+            }
+          }, 3000);
+          
+          // Guardar también localmente como respaldo
+          guardarVotoLocal(votoData);
+          
+          // Mostrar confirmación solo si es un voto confirmado
+          if (votoData.confirmado) {
+            mostrarNotificacion(`✅ Votos confirmados y enviados a Google Sheets!`);
+          }
+          
+        } catch (error) {
+          console.error('❌ Error al enviar voto:', error);
+          guardarVotoLocal(votoData);
+          mostrarNotificacion('❌ Error al enviar voto, guardado localmente');
+        }
+      }
+
+      // Función para guardar voto localmente
+      function guardarVotoLocal(votoData) {
+        try {
+          let votos = JSON.parse(localStorage.getItem('hackathon_votos') || '[]');
+          votos.push(votoData);
+          localStorage.setItem('hackathon_votos', JSON.stringify(votos));
+          console.log('💾 Voto guardado localmente');
+        } catch (error) {
+          console.error('❌ Error al guardar voto localmente:', error);
+        }
+      }
+
+      // Función para obtener votos reales desde Google Sheets
+      // Función eliminada - sistema simplificado solo para escritura
+
+      // Función para sincronizar votos reales con la interfaz
+      // Función simplificada - solo para logging
+      function logEstadoVotos() {
+        console.log('📊 Estado actual de votos:', votos);
+      }
+
+      // Función para mostrar notificaciones
+      function mostrarNotificacion(mensaje) {
+        // Crear elemento de notificación
+        const notificacion = document.createElement('div');
+        notificacion.className = 'alert alert-success position-fixed';
+        notificacion.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notificacion.innerHTML = `
+          <i class="bi bi-check-circle me-2"></i>
+          ${mensaje}
+          <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        `;
+        
+        document.body.appendChild(notificacion);
+        
+        // Remover después de 3 segundos
+        setTimeout(() => {
+          if (notificacion.parentElement) {
+            notificacion.remove();
+          }
+        }, 3000);
+      }
+
+      // Función para mostrar modal de confirmación de votos
+      function mostrarModalConfirmacionVotos() {
+        if (!juradoActual || !votos[juradoActual]) {
+          console.warn('No hay votos para mostrar en el modal');
+          return;
+        }
+
+        const votosJurado = votos[juradoActual];
+        const resumenContainer = document.getElementById('resumenVotos');
+        
+        // Limpiar contenido anterior
+        resumenContainer.innerHTML = '';
+        
+        // Crear resumen de votos
+        let html = '<h6 class="mb-3" style="color: var(--cyber-secondary);">Resumen de tus votos:</h6>';
+        
+        Object.keys(votosJurado).forEach(equipoId => {
+          const propuestaId = votosJurado[equipoId];
+          const equipo = equipos.find(e => e.id === equipoId);
+          const propuesta = equipo.propuestas.find(p => p.id === propuestaId);
+          
+          html += `
+            <div class="voto-resumen-card">
+              <h6><i class="bi bi-people me-2"></i>${equipo.nombre}</h6>
+              <div class="equipo-nombre">${equipo.integrantes.join(', ')}</div>
+              <div class="propuesta-titulo">${propuesta.titulo}</div>
+              <div class="propuesta-descripcion">${propuesta.descripcion}</div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="categoria-badge">${propuesta.categoria}</span>
+                <i class="bi bi-check-circle-fill" style="color: var(--cyber-primary);"></i>
+              </div>
+            </div>
+          `;
+        });
+        
+        resumenContainer.innerHTML = html;
+        
+        // Mostrar el modal
+        const modalElement = document.getElementById('modalConfirmacionVotos');
+        if (modalElement) {
+          // Mostrar modal directamente sin Bootstrap
+          modalElement.style.display = 'block';
+          modalElement.classList.add('show');
+          document.body.classList.add('modal-open');
+          
+          // Agregar overlay
+          const overlay = document.createElement('div');
+          overlay.className = 'modal-backdrop fade show';
+          overlay.id = 'modal-backdrop';
+          document.body.appendChild(overlay);
+          
+          console.log('✅ Modal mostrado correctamente');
+        } else {
+          console.error('❌ No se encontró el elemento del modal');
+        }
+      }
+
+      // Función para cerrar el modal
+      function cerrarModal() {
+        const modalElement = document.getElementById('modalConfirmacionVotos');
+        const overlay = document.getElementById('modal-backdrop');
+        
+        if (modalElement) {
+          modalElement.style.display = 'none';
+          modalElement.classList.remove('show');
+          document.body.classList.remove('modal-open');
+        }
+        
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+
+      // Función para confirmar votos (llamada desde el botón del modal)
+      function confirmarVotos() {
+        if (!juradoActual || !votos[juradoActual]) {
+          console.warn('No hay votos para confirmar');
+          return;
+        }
+
+        // Marcar votos como confirmados
+        if (!votos[juradoActual].confirmado) {
+          votos[juradoActual].confirmado = true;
+          votos[juradoActual].fechaConfirmacion = new Date().toISOString();
+          
+          // Cerrar el modal
+          cerrarModal();
+          
+          // Enviar votos confirmados a Google Sheets
+          enviarVotosConfirmados();
+          
+          // Mostrar notificación de éxito (ya se muestra en enviarVotoAGoogleSheets)
+          console.log('✅ Votos confirmados y enviados correctamente');
+        }
+        
+        // Actualizar interfaz - removido en sistema simplificado
+        console.log('✅ Votos confirmados correctamente');
+      }
+
+      // Función para enviar votos confirmados a Google Sheets
+      function enviarVotosConfirmados() {
+        if (!juradoActual || !votos[juradoActual]) return;
+
+        const votosJurado = votos[juradoActual];
+        
+        Object.keys(votosJurado).forEach(equipoId => {
+          if (equipoId === 'confirmado' || equipoId === 'fechaConfirmacion') return;
+          
+          const propuestaId = votosJurado[equipoId];
+          const equipo = equipos.find(e => e.id === equipoId);
+          const propuesta = equipo.propuestas.find(p => p.id === propuestaId);
+          
+          const votoData = {
+            jurado: jurados[juradoActual],
+            equipo: equipo.nombre,
+            propuestaId: propuestaId,
+            titulo: propuesta.titulo,
+            categoria: propuesta.categoria,
+            timestamp: new Date().toISOString(),
+            fecha: new Date().toLocaleString('es-ES'),
+            confirmado: true
+          };
+          
+          // Enviar a Google Sheets (solo cuando se confirma)
+          enviarVotoAGoogleSheets(votoData);
+        });
+      }
+
+      // Función de exportar eliminada - sistema simplificado
+
+      // Botón de exportar eliminado - sistema simplificado
+      document.addEventListener('DOMContentLoaded', function() {
+
+        // Agregar event listener al botón de confirmar votos
+        const btnConfirmarVotos = document.getElementById('btnConfirmarVotos');
+        if (btnConfirmarVotos) {
+          btnConfirmarVotos.addEventListener('click', confirmarVotos);
+        }
+
+        // Sincronizar votos automáticamente cada 30 segundos
+        // Sistema simplificado - sin sincronización automática
+
+        // Función de debug para verificar datos
+        window.debugVotos = function() {
+          console.log('🔍 DEBUG - Estado actual:');
+          console.log('Jurado actual:', juradoActual);
+          console.log('Votos locales:', votos);
+          console.log('Votos en localStorage:', JSON.parse(localStorage.getItem('hackathon_votos') || '[]'));
+          
+          // Probar obtener votos del Google Sheet
+          obtenerVotosReales().then(data => {
+            console.log('📊 Votos del Google Sheet:', data);
+          });
+        };
+
+        // Función para probar el modal manualmente
+        window.probarModal = function() {
+          if (!juradoActual) {
+            alert('Selecciona un jurado primero');
+            return;
+          }
+          
+          // Simular votos completos
+          votos[juradoActual] = {
+            'equipo1': 'propuesta1_1',
+            'equipo2': 'propuesta2_2', 
+            'equipo3': 'propuesta3_3',
+            'confirmado': false
+          };
+          
+          console.log('🧪 Simulando votos completos:', votos[juradoActual]);
+          verificarVotacionCompleta();
+        };
       });
     </script>
     

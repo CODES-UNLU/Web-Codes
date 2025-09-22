@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sincronizar Datos Offline - Hackathon CODES++</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+        }
+        .cyber-card {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        .status-ok { color: #00ff88; }
+        .status-error { color: #ff4444; }
+        .status-warning { color: #ffaa00; }
+        .log-container {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .data-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">🔄 Sincronizar Datos Offline</h1>
+                <p class="text-center text-muted">Hackathon CODES++ 2025</p>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>📊 Estado de la Conexión</h3>
+            <div id="connectionStatus" class="mb-3">
+                <span class="status-warning">⏳ Verificando...</span>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn btn-primary w-100 mb-2" onclick="testConnection()">🔄 Probar Conexión</button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-success w-100 mb-2" onclick="syncAllData()">📤 Sincronizar Todo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>💾 Datos Guardados Localmente</h3>
+            <div id="localDataContainer">
+                <div class="status-warning">⏳ Cargando datos locales...</div>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>📤 Sincronización</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="syncVotes()">
+                        🗳️ Sincronizar Votos
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-success w-100 mb-2" onclick="syncQualifications()">
+                        ⭐ Sincronizar Calificaciones
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-info w-100 mb-2" onclick="exportData()">
+                        📋 Exportar Datos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>📝 Log de Sincronización</h3>
+            <div id="logContainer" class="log-container">
+                <div class="status-ok">[INFO] Sistema de sincronización iniciado</div>
+            </div>
+            <button class="btn btn-secondary btn-sm mt-2" onclick="clearLog()">🗑️ Limpiar Log</button>
+        </div>
+    </div>
+
+    <script src="jurados-sheets-integration.js"></script>
+    <script>
+        let sheetsIntegration;
+        let logContainer;
+        let localDataContainer;
+
+        // Configuración
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQLbx_HDxXS3TkUC1grL9mL6u-AxVjub7bRbc7SDMVjEYeBVIT2NAn0621BSbL0JOZ/exec';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            logContainer = document.getElementById('logContainer');
+            localDataContainer = document.getElementById('localDataContainer');
+            
+            // Inicializar integración
+            sheetsIntegration = new SheetsIntegration();
+            
+            // Escuchar cambios de estado
+            const originalUpdateConnectionStatus = sheetsIntegration.updateConnectionStatus;
+            sheetsIntegration.updateConnectionStatus = function(status, message) {
+                originalUpdateConnectionStatus.call(this, status, message);
+                updateConnectionDisplay(status, message);
+            };
+            
+            log('Sistema de sincronización iniciado');
+            loadLocalData();
+            testConnection();
+        });
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'status-error' : 
+                              type === 'warning' ? 'status-warning' : 'status-ok';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = colorClass;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="status-ok">[INFO] Log limpiado</div>';
+        }
+
+        function updateConnectionDisplay(status, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            
+            if (status === 'connected') {
+                statusElement.innerHTML = '<span class="status-ok">✅ Conectado a Google Sheets</span>';
+                log('Conexión establecida - Listo para sincronizar', 'info');
+            } else if (status === 'error') {
+                statusElement.innerHTML = '<span class="status-error">❌ Error de conexión</span>';
+                log('Error de conexión - Modo offline activado', 'warning');
+            } else {
+                statusElement.innerHTML = '<span class="status-warning">⚠️ Modo offline</span>';
+                log('Modo offline - Datos se guardan localmente', 'warning');
+            }
+        }
+
+        function loadLocalData() {
+            const localData = {
+                votos: JSON.parse(localStorage.getItem('hackathon_votos') || '[]'),
+                calificaciones: JSON.parse(localStorage.getItem('hackathon_calificaciones') || '[]'),
+                configuracion: JSON.parse(localStorage.getItem('hackathon_configuracion') || '{}')
+            };
+
+            let html = '';
+            
+            if (localData.votos.length > 0) {
+                html += '<div class="data-item">';
+                html += '<h5 class="status-ok">🗳️ Votos Guardados (' + localData.votos.length + ')</h5>';
+                localData.votos.forEach((voto, index) => {
+                    html += `<div class="text-muted">${index + 1}. ${voto.jurado} → ${voto.equipo} - ${voto.titulo}</div>`;
+                });
+                html += '</div>';
+            }
+
+            if (localData.calificaciones.length > 0) {
+                html += '<div class="data-item">';
+                html += '<h5 class="status-ok">⭐ Calificaciones Guardadas (' + localData.calificaciones.length + ')</h5>';
+                localData.calificaciones.forEach((cal, index) => {
+                    html += `<div class="text-muted">${index + 1}. ${cal.jurado} → ${cal.equipo} - ${cal.titulo}</div>`;
+                });
+                html += '</div>';
+            }
+
+            if (localData.votos.length === 0 && localData.calificaciones.length === 0) {
+                html = '<div class="status-warning">⚠️ No hay datos guardados localmente</div>';
+            }
+
+            localDataContainer.innerHTML = html;
+            log(`Datos locales cargados: ${localData.votos.length} votos, ${localData.calificaciones.length} calificaciones`);
+        }
+
+        async function testConnection() {
+            log('Probando conexión con Google Sheets...');
+            try {
+                await sheetsIntegration.testConnection();
+                if (sheetsIntegration.isConnected) {
+                    log('✅ Conexión establecida - Listo para sincronizar', 'info');
+                } else {
+                    log('⚠️ Sin conexión - Modo offline', 'warning');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function syncVotes() {
+            const votos = JSON.parse(localStorage.getItem('hackathon_votos') || '[]');
+            
+            if (votos.length === 0) {
+                log('⚠️ No hay votos para sincronizar', 'warning');
+                return;
+            }
+
+            log(`Iniciando sincronización de ${votos.length} votos...`);
+            
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const voto of votos) {
+                try {
+                    await sheetsIntegration.registrarVoto(
+                        voto.jurado,
+                        voto.equipo,
+                        voto.propuestaId,
+                        voto.titulo,
+                        voto.categoria
+                    );
+                    successCount++;
+                    log(`✅ Voto sincronizado: ${voto.jurado} → ${voto.equipo}`, 'info');
+                } catch (error) {
+                    errorCount++;
+                    log(`❌ Error sincronizando voto: ${error.message}`, 'error');
+                }
+            }
+
+            if (successCount > 0) {
+                // Limpiar votos sincronizados
+                localStorage.removeItem('hackathon_votos');
+                log(`✅ Sincronización completada: ${successCount} votos enviados`, 'info');
+                loadLocalData();
+            }
+
+            if (errorCount > 0) {
+                log(`⚠️ ${errorCount} votos no pudieron sincronizarse`, 'warning');
+            }
+        }
+
+        async function syncQualifications() {
+            const calificaciones = JSON.parse(localStorage.getItem('hackathon_calificaciones') || '[]');
+            
+            if (calificaciones.length === 0) {
+                log('⚠️ No hay calificaciones para sincronizar', 'warning');
+                return;
+            }
+
+            log(`Iniciando sincronización de ${calificaciones.length} calificaciones...`);
+            
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const cal of calificaciones) {
+                try {
+                    await sheetsIntegration.registrarCalificacion(
+                        cal.jurado,
+                        cal.proyectoId,
+                        cal.equipo,
+                        cal.titulo,
+                        cal.calificaciones
+                    );
+                    successCount++;
+                    log(`✅ Calificación sincronizada: ${cal.jurado} → ${cal.equipo}`, 'info');
+                } catch (error) {
+                    errorCount++;
+                    log(`❌ Error sincronizando calificación: ${error.message}`, 'error');
+                }
+            }
+
+            if (successCount > 0) {
+                // Limpiar calificaciones sincronizadas
+                localStorage.removeItem('hackathon_calificaciones');
+                log(`✅ Sincronización completada: ${successCount} calificaciones enviadas`, 'info');
+                loadLocalData();
+            }
+
+            if (errorCount > 0) {
+                log(`⚠️ ${errorCount} calificaciones no pudieron sincronizarse`, 'warning');
+            }
+        }
+
+        async function syncAllData() {
+            log('Iniciando sincronización completa...');
+            await syncVotes();
+            await syncQualifications();
+            log('Sincronización completa finalizada');
+        }
+
+        function exportData() {
+            const localData = {
+                votos: JSON.parse(localStorage.getItem('hackathon_votos') || '[]'),
+                calificaciones: JSON.parse(localStorage.getItem('hackathon_calificaciones') || '[]'),
+                configuracion: JSON.parse(localStorage.getItem('hackathon_configuracion') || '{}'),
+                timestamp: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(localData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `hackathon_datos_offline_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            log('📋 Datos exportados como archivo JSON', 'info');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Google Sheets - Hackathon CODES++</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+        }
+        .cyber-card {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        .status-ok { color: #00ff88; }
+        .status-error { color: #ff4444; }
+        .status-warning { color: #ffaa00; }
+        .log-container {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">🔧 Diagnóstico Google Sheets</h1>
+                <p class="text-center text-muted">Hackathon CODES++ 2025</p>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>📊 Estado de la Conexión</h3>
+            <div id="connectionStatus" class="mb-3">
+                <span class="status-warning">⏳ Verificando...</span>
+            </div>
+            <button class="btn btn-primary" onclick="testConnection()">🔄 Probar Conexión</button>
+            <button class="btn btn-success" onclick="testVote()">🗳️ Probar Voto</button>
+        </div>
+
+        <div class="cyber-card">
+            <h3>📝 Log de Actividad</h3>
+            <div id="logContainer" class="log-container">
+                <div class="status-ok">[INFO] Sistema de diagnóstico iniciado</div>
+            </div>
+            <button class="btn btn-secondary btn-sm mt-2" onclick="clearLog()">🗑️ Limpiar Log</button>
+        </div>
+
+        <div class="cyber-card">
+            <h3>⚙️ Configuración Actual</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Script URL:</strong><br>
+                    <code id="scriptUrl" class="text-break"></code>
+                </div>
+                <div class="col-md-6">
+                    <strong>Estado:</strong><br>
+                    <span id="connectionState" class="status-warning">Desconocido</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cyber-card">
+            <h3>🧪 Pruebas de Funcionalidad</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <button class="btn btn-outline-primary w-100 mb-2" onclick="testEndpoint('obtenerConfiguracion')">
+                        📋 Obtener Configuración
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-success w-100 mb-2" onclick="testEndpoint('getEquipos')">
+                        👥 Obtener Equipos
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-info w-100 mb-2" onclick="testEndpoint('getJurados')">
+                        ⚖️ Obtener Jurados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="jurados-sheets-integration.js"></script>
+    <script>
+        let sheetsIntegration;
+        let logContainer;
+
+        // Configuración
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQLbx_HDxXS3TkUC1grL9mL6u-AxVjub7bRbc7SDMVjEYeBVIT2NAn0621BSbL0JOZ/exec';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            logContainer = document.getElementById('logContainer');
+            document.getElementById('scriptUrl').textContent = SCRIPT_URL;
+            
+            // Inicializar integración
+            sheetsIntegration = new SheetsIntegration();
+            
+            // Escuchar cambios de estado
+            const originalUpdateConnectionStatus = sheetsIntegration.updateConnectionStatus;
+            sheetsIntegration.updateConnectionStatus = function(status, message) {
+                originalUpdateConnectionStatus.call(this, status, message);
+                updateConnectionDisplay(status, message);
+            };
+            
+            log('Sistema de diagnóstico iniciado');
+            testConnection();
+        });
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'status-error' : 
+                              type === 'warning' ? 'status-warning' : 'status-ok';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = colorClass;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="status-ok">[INFO] Log limpiado</div>';
+        }
+
+        function updateConnectionDisplay(status, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            const stateElement = document.getElementById('connectionState');
+            
+            if (status === 'connected') {
+                statusElement.innerHTML = '<span class="status-ok">✅ Conectado a Google Sheets</span>';
+                stateElement.textContent = 'Conectado';
+                stateElement.className = 'status-ok';
+            } else if (status === 'error') {
+                statusElement.innerHTML = '<span class="status-error">❌ Error de conexión</span>';
+                stateElement.textContent = 'Error';
+                stateElement.className = 'status-error';
+            } else {
+                statusElement.innerHTML = '<span class="status-warning">⚠️ Modo offline</span>';
+                stateElement.textContent = 'Offline';
+                stateElement.className = 'status-warning';
+            }
+            
+            log(`Estado de conexión: ${status} - ${message}`, status === 'connected' ? 'info' : 'warning');
+        }
+
+        async function testConnection() {
+            log('Iniciando prueba de conexión...');
+            try {
+                await sheetsIntegration.testConnection();
+                log('Prueba de conexión completada', sheetsIntegration.isConnected ? 'info' : 'warning');
+            } catch (error) {
+                log(`Error en prueba de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testVote() {
+            log('Iniciando prueba de voto...');
+            try {
+                const result = await sheetsIntegration.registrarVoto(
+                    'Test Jurado',
+                    'Equipo Test',
+                    'propuesta_test',
+                    'Propuesta de Prueba',
+                    'Test'
+                );
+                log(`Prueba de voto completada: ${result ? 'Éxito' : 'Falló'}`, result ? 'info' : 'warning');
+            } catch (error) {
+                log(`Error en prueba de voto: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEndpoint(endpoint) {
+            log(`Probando endpoint: ${endpoint}`);
+            try {
+                const result = await sheetsIntegration.makeRequest(endpoint);
+                log(`Endpoint ${endpoint}: ${JSON.stringify(result)}`, 'info');
+            } catch (error) {
+                log(`Error en endpoint ${endpoint}: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
