@@ -780,6 +780,23 @@
             </div>
           </div>
 
+          <!-- Botón de Transparencia -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex justify-content-center">
+                <a href="https://docs.google.com/spreadsheets/d/1UmhBDevk6MvgDqmj_WuQbCsk3sQz1aCiSHwC3OY8QPU/edit?usp=sharing" 
+                   target="_blank" 
+                   class="btn btn-outline-light" 
+                   style="border: 2px solid var(--cyber-accent); color: var(--cyber-accent); font-weight: 600; padding: 0.75rem 2rem;">
+                  <i class="bi bi-table me-2"></i>Ver Votaciones en Tiempo Real
+                  <small class="d-block mt-1" style="color: var(--cyber-text-muted); font-weight: 400;">
+                    Acceso de solo lectura al registro de votos
+                  </small>
+                </a>
+              </div>
+            </div>
+          </div>
+
 
           <!-- Contenido Dinámico -->
           <div id="contenidoDinamico">
@@ -1157,8 +1174,114 @@
         }
       ];
 
+      // Función para cargar votos guardados localmente
+      function cargarVotosGuardados() {
+        try {
+          const votosGuardados = JSON.parse(localStorage.getItem('hackathon_votos') || '[]');
+          console.log('📂 Votos guardados localmente:', votosGuardados);
+          
+          // Reconstruir el objeto votos desde localStorage
+          votosGuardados.forEach(voto => {
+            const juradoKey = Object.keys(jurados).find(key => jurados[key] === voto.jurado);
+            if (juradoKey) {
+              if (!votos[juradoKey]) {
+                votos[juradoKey] = {};
+              }
+              
+              // Encontrar el equipo por nombre
+              const equipo = equipos.find(e => e.nombre === voto.equipo);
+              if (equipo) {
+                votos[juradoKey][equipo.id] = voto.propuestaId;
+                
+                // Si el voto está confirmado, marcar como tal
+                if (voto.confirmado) {
+                  votos[juradoKey].confirmado = true;
+                  votos[juradoKey].fechaConfirmacion = voto.timestamp;
+                }
+              }
+            }
+          });
+          
+          console.log('✅ Votos reconstruidos:', votos);
+        } catch (error) {
+          console.error('❌ Error cargando votos guardados:', error);
+        }
+      }
+
+      // Función para limpiar votos de un jurado (para testing)
+      function limpiarVotosJurado(juradoKey) {
+        if (confirm(`¿Estás seguro de que quieres limpiar los votos de ${jurados[juradoKey]}?`)) {
+          delete votos[juradoKey];
+          
+          // Limpiar también del localStorage
+          const votosGuardados = JSON.parse(localStorage.getItem('hackathon_votos') || '[]');
+          const votosFiltrados = votosGuardados.filter(voto => voto.jurado !== jurados[juradoKey]);
+          localStorage.setItem('hackathon_votos', JSON.stringify(votosFiltrados));
+          
+          console.log(`✅ Votos de ${jurados[juradoKey]} limpiados`);
+          
+          // Recargar la interfaz si es el jurado actual
+          if (juradoActual === juradoKey && modoActual === 'propuestas') {
+            cargarEquipos();
+          }
+        }
+      }
+
+      // Función global para limpiar votos (disponible en consola)
+      window.limpiarVotosJurado = limpiarVotosJurado;
+
+      // Función para limpiar TODOS los votos locales (para testing)
+      function limpiarTodosLosVotos() {
+        if (confirm('¿Estás seguro de que quieres limpiar TODOS los votos locales? Esto permitirá que todos los jurados voten nuevamente.')) {
+          // Limpiar objeto votos
+          Object.keys(votos).forEach(key => delete votos[key]);
+          
+          // Limpiar localStorage
+          localStorage.removeItem('hackathon_votos');
+          
+          console.log('✅ Todos los votos locales limpiados');
+          
+          // Recargar la interfaz si estamos en modo propuestas
+          if (modoActual === 'propuestas') {
+            cargarEquipos();
+          }
+          
+          mostrarNotificacion('✅ Todos los votos locales limpiados');
+        }
+      }
+
+      // Función global para limpiar todos los votos
+      window.limpiarTodosLosVotos = limpiarTodosLosVotos;
+
+      // Función para verificar estado de votos
+      function verificarEstadoVotos() {
+        console.log('📊 ESTADO ACTUAL DE VOTOS:');
+        console.log('  - Votos en memoria:', votos);
+        console.log('  - Votos en localStorage:', JSON.parse(localStorage.getItem('hackathon_votos') || '[]'));
+        
+        Object.keys(jurados).forEach(juradoKey => {
+          const jurado = jurados[juradoKey];
+          const votosJurado = votos[juradoKey];
+          
+          if (votosJurado) {
+            const equiposVotados = Object.keys(votosJurado).filter(key => key !== 'confirmado' && key !== 'fechaConfirmacion').length;
+            const confirmado = votosJurado.confirmado || false;
+            
+            console.log(`  - ${jurado}: ${equiposVotados}/3 equipos votados, confirmado: ${confirmado}`);
+          } else {
+            console.log(`  - ${jurado}: Sin votos`);
+          }
+        });
+      }
+
+      // Función global para verificar estado
+      window.verificarEstadoVotos = verificarEstadoVotos;
+
       // Inicializar el sistema
       document.addEventListener('DOMContentLoaded', function() {
+        // Cargar votos guardados al inicializar
+        cargarVotosGuardados();
+        
         const juradoSelector = document.getElementById('juradoSelector');
         const btnSeleccionarPropuestas = document.getElementById('btnSeleccionarPropuestas');
         const btnCalificarProyectos = document.getElementById('btnCalificarProyectos');
@@ -1166,6 +1289,12 @@
         // Manejar selección de jurado
         juradoSelector.addEventListener('change', async function() {
           juradoActual = this.value;
+          
+          // Verificar si el jurado ya confirmó sus votos
+          if (juradoActual && votos[juradoActual] && votos[juradoActual].confirmado) {
+            console.log(`⚠️ Jurado ${jurados[juradoActual]} ya confirmó sus votos`);
+          }
+          
           if (juradoActual && modoActual) {
             // Sistema simplificado - solo escritura
             
@@ -1243,6 +1372,20 @@
             return;
           }
 
+          // Verificar si el jurado ya confirmó sus votos
+          if (votos[juradoActual] && votos[juradoActual].confirmado) {
+            equiposContainer.innerHTML = `
+              <div class="col-12">
+                <div class="alert alert-success text-center">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  <strong>Votación Completada</strong>
+                  <p class="mb-0 mt-2">Este jurado ya ha confirmado sus votos y no puede votar nuevamente.</p>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
           equiposContainer.innerHTML = '';
           
           equipos.forEach(equipo => {
@@ -1311,6 +1454,12 @@
             return;
           }
 
+          // Verificar si el jurado ya confirmó sus votos
+          if (votos[juradoActual] && votos[juradoActual].confirmado) {
+            alert('Ya has confirmado tus votos. No puedes votar nuevamente.');
+            return;
+          }
+
           // Verificar si ya votó por este equipo
           if (votos[juradoActual] && votos[juradoActual][equipoId]) {
             if (confirm('Ya has votado por una propuesta de este equipo. ¿Deseas cambiar tu voto?')) {
@@ -1376,6 +1525,14 @@
             const equipoId = btn.dataset.equipo;
             const propuestaId = btn.dataset.propuesta;
             
+            // Si el jurado ya confirmó, deshabilitar todos los botones
+            if (votos[juradoActual] && votos[juradoActual].confirmado) {
+              btn.innerHTML = '<i class="bi bi-lock me-1"></i>Votación Cerrada';
+              btn.style.background = 'var(--cyber-text-muted)';
+              btn.disabled = true;
+              return;
+            }
+            
             if (votos[juradoActual] && votos[juradoActual][equipoId] === propuestaId) {
               btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Votado ✓';
               btn.style.background = 'var(--cyber-accent)';
@@ -1405,6 +1562,8 @@
           console.log('  - Votos del jurado:', votosJuradoActual);
           console.log('  - Equipos votados:', equiposVotados);
           console.log('  - Total equipos:', totalEquipos);
+          console.log('  - IDs de equipos configurados:', equipos.map(e => e.id));
+          console.log('  - IDs de equipos votados:', Object.keys(votosJuradoActual).filter(key => key !== 'confirmado' && key !== 'fechaConfirmacion'));
           console.log('  - Ha completado votación:', haCompletadoVotacion);
           console.log('  - Confirmado:', votosJuradoActual.confirmado);
 
@@ -1699,7 +1858,7 @@
       });
 
       // Función para enviar voto a Google Sheets
-      function enviarVotoAGoogleSheets(votoData) {
+      async function enviarVotoAGoogleSheets(votoData) {
         try {
           // URL de Google Apps Script configurada
           const baseUrl = 'https://script.google.com/macros/s/AKfycbwOPz-5P0OY1v_ytk1xlz5IxT6n3V6zuHPLRrTJGMpAITqE85Jlv3jwao1idUtWpMTmGw/exec';
@@ -1728,31 +1887,47 @@
           console.log('URL:', url);
           console.log('Datos:', votoData);
           
-          // Crear iframe oculto para enviar
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = url;
-          document.body.appendChild(iframe);
+          // Usar fetch en lugar de iframe para mejor control
+          const response = await fetch(url, {
+            method: 'GET',
+            mode: 'no-cors' // Necesario para Google Apps Script
+          });
           
-          // Remover iframe después de 3 segundos
-          setTimeout(() => {
-            if (iframe.parentElement) {
-              iframe.remove();
-            }
-          }, 3000);
+          console.log('✅ Voto enviado exitosamente');
           
           // Guardar también localmente como respaldo
           guardarVotoLocal(votoData);
           
           // Mostrar confirmación solo si es un voto confirmado
           if (votoData.confirmado) {
-            mostrarNotificacion(`✅ Votos confirmados y enviados a Google Sheets!`);
+            mostrarNotificacion(`✅ Voto enviado a Google Sheets!`);
           }
           
         } catch (error) {
           console.error('❌ Error al enviar voto:', error);
-          guardarVotoLocal(votoData);
-          mostrarNotificacion('❌ Error al enviar voto, guardado localmente');
+          
+          // Fallback: usar iframe si fetch falla
+          console.log('🔄 Intentando con iframe como fallback...');
+          try {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+              if (iframe.parentElement) {
+                iframe.remove();
+              }
+            }, 3000);
+            
+            guardarVotoLocal(votoData);
+            console.log('✅ Voto enviado via iframe fallback');
+            
+          } catch (iframeError) {
+            console.error('❌ Error también con iframe:', iframeError);
+            guardarVotoLocal(votoData);
+            mostrarNotificacion('❌ Error al enviar voto, guardado localmente');
+          }
         }
       }
 
@@ -1899,17 +2074,33 @@
       }
 
       // Función para enviar votos confirmados a Google Sheets
-      function enviarVotosConfirmados() {
+      async function enviarVotosConfirmados() {
         if (!juradoActual || !votos[juradoActual]) return;
 
         const votosJurado = votos[juradoActual];
         
+        console.log('📤 DEBUG enviarVotosConfirmados:');
+        console.log('  - Jurado actual:', juradoActual);
+        console.log('  - Votos del jurado:', votosJurado);
+        console.log('  - Total equipos configurados:', equipos.length);
+        console.log('  - Equipos:', equipos.map(e => e.id));
+        
+        let votosEnviados = 0;
+        const votosParaEnviar = [];
+        
+        // Preparar todos los votos
         Object.keys(votosJurado).forEach(equipoId => {
           if (equipoId === 'confirmado' || equipoId === 'fechaConfirmacion') return;
           
           const propuestaId = votosJurado[equipoId];
           const equipo = equipos.find(e => e.id === equipoId);
           const propuesta = equipo.propuestas.find(p => p.id === propuestaId);
+          
+          console.log(`  - Procesando voto para equipo ${equipoId}:`, {
+            equipo: equipo?.nombre,
+            propuestaId: propuestaId,
+            titulo: propuesta?.titulo
+          });
           
           const votoData = {
             jurado: jurados[juradoActual],
@@ -1922,9 +2113,34 @@
             confirmado: true
           };
           
-          // Enviar a Google Sheets (solo cuando se confirma)
-          enviarVotoAGoogleSheets(votoData);
+          votosParaEnviar.push(votoData);
         });
+        
+        // Enviar votos uno por uno con delay para evitar problemas de concurrencia
+        for (let i = 0; i < votosParaEnviar.length; i++) {
+          const votoData = votosParaEnviar[i];
+          console.log(`📤 Enviando voto ${i + 1}/${votosParaEnviar.length}: ${votoData.titulo}`);
+          
+          try {
+            await enviarVotoAGoogleSheets(votoData);
+            votosEnviados++;
+            
+            // Delay de 1 segundo entre envíos para evitar problemas de concurrencia
+            if (i < votosParaEnviar.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          } catch (error) {
+            console.error(`❌ Error enviando voto ${i + 1}:`, error);
+          }
+        }
+        
+        console.log(`✅ Total votos enviados: ${votosEnviados} de ${votosParaEnviar.length} votos`);
+        
+        if (votosEnviados === votosParaEnviar.length) {
+          mostrarNotificacion(`✅ Todos los votos enviados correctamente (${votosEnviados}/${votosParaEnviar.length})`);
+        } else {
+          mostrarNotificacion(`⚠️ Se enviaron ${votosEnviados} de ${votosParaEnviar.length} votos. Revisa la consola para más detalles.`);
+        }
       }
 
       // Función de exportar eliminada - sistema simplificado
