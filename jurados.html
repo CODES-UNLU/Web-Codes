@@ -979,25 +979,28 @@
           id: 'equipo2',
           nombre: 'Los migajeros',
           integrantes: ['Santiago Sánchez (Capitán)', 'Carpo Fiorence', 'Jeremias Pierini'],
-          pdf: 'https://drive.google.com/file/d/1DEF456GHI789JKL012MNO/view?usp=sharing',
+          pdf: 'Propuestas_Equipos/Los Migajeros/',
           propuestas: [
             {
               id: 'propuesta2_1',
-              titulo: 'Marketplace de Servicios Locales',
-              descripcion: 'Plataforma que conecta proveedores de servicios con clientes en su zona.',
-              categoria: 'E-commerce'
+              titulo: 'DESCUBRE QUE COCINAR',
+              descripcion: 'Aplicación que ayuda a los usuarios a descubrir qué cocinar basándose en ingredientes disponibles y preferencias.',
+              categoria: 'Alimentación',
+              pdf: 'Propuestas_Equipos/Los Migajeros/DESCUBRE QUE COCINAR.pdf'
             },
             {
               id: 'propuesta2_2',
-              titulo: 'App de Salud Mental y Bienestar',
-              descripcion: 'Herramienta con ejercicios de mindfulness y seguimiento del estado emocional.',
-              categoria: 'Salud'
+              titulo: 'Red de Búsqueda de Mascotas',
+              descripcion: 'Plataforma para conectar a dueños de mascotas perdidas con la comunidad para facilitar su búsqueda.',
+              categoria: 'Comunidad',
+              pdf: 'Propuestas_Equipos/Los Migajeros/Red de Busqueda de Mascotas.pdf'
             },
             {
               id: 'propuesta2_3',
-              titulo: 'Sistema de Gestión de Residuos Inteligente',
-              descripcion: 'App que optimiza rutas de recolección de basura usando algoritmos genéticos.',
-              categoria: 'Sostenibilidad'
+              titulo: 'SKILLSWAP HACKATON',
+              descripcion: 'Plataforma de intercambio de habilidades donde los usuarios pueden enseñar y aprender nuevas competencias.',
+              categoria: 'Educación',
+              pdf: 'Propuestas_Equipos/Los Migajeros/SKILLSWAP HACKATON.pdf'
             }
           ]
         },
@@ -1245,16 +1248,11 @@
             equipoCard.innerHTML = `
               <div class="card h-100" style="background: var(--cyber-gray); border: 1px solid var(--cyber-border);">
                 <div class="card-header" style="background: var(--cyber-light-gray); border-bottom: 1px solid var(--cyber-border);">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h5 class="card-title mb-0" style="color: var(--cyber-primary);">
-                        <i class="bi bi-people me-2"></i>${equipo.nombre}
-                      </h5>
-                      <small style="color: var(--cyber-secondary); font-weight: 500;">${equipo.integrantes.join(', ')}</small>
-                    </div>
-                    <a href="${equipo.pdf}" target="_blank" class="btn btn-sm" style="background: var(--cyber-secondary); border: none; color: var(--cyber-dark); font-weight: 600;">
-                      <i class="bi bi-file-earmark-pdf me-1"></i>Ver PDF
-                    </a>
+                  <div>
+                    <h5 class="card-title mb-0" style="color: var(--cyber-primary);">
+                      <i class="bi bi-people me-2"></i>${equipo.nombre}
+                    </h5>
+                    <small style="color: var(--cyber-secondary); font-weight: 500;">${equipo.integrantes.join(', ')}</small>
                   </div>
                 </div>
                 <div class="card-body">
@@ -1266,13 +1264,18 @@
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge" style="background: var(--cyber-accent); color: var(--cyber-dark);">${propuesta.categoria}</span>
                       </div>
-                      <div class="mt-2">
+                      <div class="mt-2 d-flex gap-2 flex-wrap">
                         <button class="btn btn-sm votar-btn" 
                                 data-equipo="${equipo.id}" 
                                 data-propuesta="${propuesta.id}"
                                 style="background: var(--cyber-primary); border: none; color: var(--cyber-dark); font-weight: 600;">
                           <i class="bi bi-check-circle me-1"></i>Votar por esta propuesta
                         </button>
+                        ${propuesta.pdf ? `
+                        <a href="${propuesta.pdf}" target="_blank" class="btn btn-sm" style="background: var(--cyber-secondary); border: none; color: var(--cyber-dark); font-weight: 600;">
+                          <i class="bi bi-file-earmark-pdf me-1"></i>Ver PDF
+                        </a>
+                        ` : ''}
                       </div>
                     </div>
                   `).join('')}
