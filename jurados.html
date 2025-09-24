@@ -953,25 +953,25 @@
           id: 'equipo1',
           nombre: 'Grupo_crear()',
           integrantes: ['Matias Rodriguez (Capitán)', 'Tatiana Galeano', 'Santiago Franqueira'],
-          pdf: 'https://drive.google.com/file/d/1ABC123DEF456GHI789JKL/view?usp=sharing',
+          pdf: 'Propuestas_Equipos/Grupo_crear/Propuestas Hackathon Virtual.pdf',
           propuestas: [
             {
               id: 'propuesta1_1',
-              titulo: 'App de Gestión de Inventario Inteligente',
-              descripcion: 'Sistema que utiliza IA para predecir demanda y optimizar stock automáticamente.',
-              categoria: 'Inteligencia Artificial'
+              titulo: 'Sistema de Gestión de Turnos Médicos',
+              descripcion: 'Plataforma web centralizada para consultar profesionales de salud, ver disponibilidad de turnos en tiempo real y gestionar citas médicas de forma ágil.',
+              categoria: 'Salud'
             },
             {
               id: 'propuesta1_2',
-              titulo: 'Plataforma de E-learning Gamificada',
-              descripcion: 'Aplicación web que convierte el aprendizaje en un juego interactivo con recompensas.',
+              titulo: 'Plataforma de Alojamiento Estudiantil',
+              descripcion: 'Aplicación web que conecta estudiantes de la UNLu con propietarios de monoambientes y departamentos, facilitando la búsqueda de alojamiento accesible.',
               categoria: 'Educación'
             },
             {
               id: 'propuesta1_3',
-              titulo: 'Sistema de Monitoreo Ambiental IoT',
-              descripcion: 'Red de sensores conectados para monitorear calidad del aire en tiempo real.',
-              categoria: 'IoT'
+              titulo: 'Sistema de Inscripción a Talleres Comunitarios',
+              descripcion: 'Plataforma web para centralizar información de talleres municipales y comunitarios, permitiendo inscripciones digitales y gestión de cupos en tiempo real.',
+              categoria: 'Comunidad'
             }
           ]
         },
@@ -1248,11 +1248,18 @@
             equipoCard.innerHTML = `
               <div class="card h-100" style="background: var(--cyber-gray); border: 1px solid var(--cyber-border);">
                 <div class="card-header" style="background: var(--cyber-light-gray); border-bottom: 1px solid var(--cyber-border);">
-                  <div>
-                    <h5 class="card-title mb-0" style="color: var(--cyber-primary);">
-                      <i class="bi bi-people me-2"></i>${equipo.nombre}
-                    </h5>
-                    <small style="color: var(--cyber-secondary); font-weight: 500;">${equipo.integrantes.join(', ')}</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 class="card-title mb-0" style="color: var(--cyber-primary);">
+                        <i class="bi bi-people me-2"></i>${equipo.nombre}
+                      </h5>
+                      <small style="color: var(--cyber-secondary); font-weight: 500;">${equipo.integrantes.join(', ')}</small>
+                    </div>
+                    ${equipo.pdf && !equipo.propuestas.some(p => p.pdf) ? `
+                    <a href="${equipo.pdf}" target="_blank" class="btn btn-sm" style="background: var(--cyber-secondary); border: none; color: var(--cyber-dark); font-weight: 600;">
+                      <i class="bi bi-file-earmark-pdf me-1"></i>Ver PDF
+                    </a>
+                    ` : ''}
                   </div>
                 </div>
                 <div class="card-body">
