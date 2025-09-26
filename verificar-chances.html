@@ -462,11 +462,10 @@
              
              // Función para determinar la medalla según las chances
              function obtenerMedalla(chances, dni) {
-                 if (chances === chancesLider) return '🥇';
-                 if (chances === chancesSegundo) return '🥈';
-                 if (chances === chancesTercero) return '🥉';
-                 if (dni === '46433846') return '⭐'; // Indicador especial para el DNI específico
-                 return '';
+             if (chances === chancesLider) return '🥇';
+             if (chances === chancesSegundo) return '🥈';
+             if (chances === chancesTercero) return '🥉';
+             return '';
              }
              
              // Primera columna: posiciones 1-5
@@ -476,17 +475,14 @@
                  const posicion = i + 1;
                  const medalla = obtenerMedalla(participante.chances, participante.dni);
                  const displayText = medalla || `${posicion}.`;
-                 const esDNIEspecifico = participante.dni === '46433846';
-                 const estiloEspecial = esDNIEspecifico ? 'border-warning bg-light' : '';
-                 
                  contenido += `
-                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
+                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2">
                          <div>
                              <span class="fw-bold">${displayText}</span>
                              <span class="text-muted">Participante ${posicion}</span>
                          </div>
                          <div>
-                             <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
+                             <span class="badge bg-primary fs-6">${participante.chances} chances</span>
                          </div>
                      </div>
                  `;
@@ -500,17 +496,14 @@
                  const posicion = i + 1;
                  const medalla = obtenerMedalla(participante.chances, participante.dni);
                  const displayText = medalla || `${posicion}.`;
-                 const esDNIEspecifico = participante.dni === '46433846';
-                 const estiloEspecial = esDNIEspecifico ? 'border-warning bg-light' : '';
-                 
                  contenido += `
-                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
+                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2">
                          <div>
                              <span class="fw-bold">${displayText}</span>
                              <span class="text-muted">Participante ${posicion}</span>
                          </div>
                          <div>
-                             <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
+                             <span class="badge bg-primary fs-6">${participante.chances} chances</span>
                          </div>
                      </div>
                  `;
