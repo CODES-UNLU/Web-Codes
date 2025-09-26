@@ -385,10 +385,15 @@
 
         // Función para mostrar Top 10
         function mostrarTop10() {
-            if (datosSorteo.length === 0) return;
-            
-            console.log('=== CALCULANDO TOP 10 ===');
-            console.log('Total de registros:', datosSorteo.length);
+            try {
+                if (datosSorteo.length === 0) {
+                    console.log('No hay datos de sorteo para mostrar Top 10');
+                    return;
+                }
+                
+                console.log('=== CALCULANDO TOP 10 ===');
+                console.log('Total de registros:', datosSorteo.length);
+                console.log('Primeros 3 registros:', datosSorteo.slice(0, 3));
             
             // Agrupar por DNI y sumar chances
             const participantes = {};
@@ -409,32 +414,27 @@
                 .map(([dni, chances]) => ({ dni, chances }))
                 .sort((a, b) => b.chances - a.chances);
             
-            console.log('Todos los participantes ordenados:', todosLosParticipantes.slice(0, 15));
+            console.log('Todos los participantes ordenados (primeros 15):', todosLosParticipantes.slice(0, 15));
             
             // Buscar la posición del DNI específico
             const posicionDNI = todosLosParticipantes.findIndex(p => p.dni === '46433846');
-            console.log('Posición del DNI 46433846:', posicionDNI + 1);
+            console.log('Posición del DNI 46433846 en ranking completo:', posicionDNI + 1);
             console.log('Chances del DNI 46433846:', todosLosParticipantes[posicionDNI]?.chances);
             
-            let top10 = todosLosParticipantes.slice(0, 10);
+            // Mostrar los primeros 3 para verificar
+            console.log('Top 3 participantes:');
+            todosLosParticipantes.slice(0, 3).forEach((p, i) => {
+                console.log(`${i + 1}. DNI ${p.dni}: ${p.chances} chances`);
+            });
             
-            // Verificar si el DNI específico está en el top 10, si no, agregarlo
-            const dniEspecifico = '46433846';
-            const estaEnTop10 = top10.some(p => p.dni === dniEspecifico);
-            
-            if (!estaEnTop10 && participantes[dniEspecifico]) {
-                console.log('DNI 46433846 no está en top 10, agregándolo...');
-                // Reemplazar el último del top 10 con el DNI específico si tiene más chances
-                const ultimoTop10 = top10[9];
-                const dniEspecificoData = todosLosParticipantes.find(p => p.dni === dniEspecifico);
-                
-                if (dniEspecificoData && dniEspecificoData.chances > ultimoTop10.chances) {
-                    top10[9] = dniEspecificoData;
-                    console.log('DNI 46433846 agregado al top 10');
-                }
-            }
+            const top10 = todosLosParticipantes.slice(0, 10);
             
             console.log('Top 10 final:', top10);
+            
+            // Verificar si el DNI específico está en el top 10
+            const dniEspecifico = '46433846';
+            const posicionDNIEnTop10 = top10.findIndex(p => p.dni === dniEspecifico);
+            console.log('DNI 46433846 en posición del Top 10:', posicionDNIEnTop10 + 1);
             
             // Crear contenido del Top 10
             let contenido = '<div class="row">';
@@ -483,7 +483,7 @@
                      <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
                          <div>
                              <span class="fw-bold">${displayText}</span>
-                             <span class="text-muted">${esDNIEspecifico ? 'DNI: ' + participante.dni : 'Participante ' + posicion}</span>
+                             <span class="text-muted">Participante ${posicion}</span>
                          </div>
                          <div>
                              <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
@@ -507,7 +507,7 @@
                      <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
                          <div>
                              <span class="fw-bold">${displayText}</span>
-                             <span class="text-muted">${esDNIEspecifico ? 'DNI: ' + participante.dni : 'Participante ' + posicion}</span>
+                             <span class="text-muted">Participante ${posicion}</span>
                          </div>
                          <div>
                              <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
@@ -524,6 +524,14 @@
             const top10Contenido = document.getElementById('top10Contenido');
             top10Contenido.innerHTML = contenido;
             top10Div.style.display = 'block';
+            
+            } catch (error) {
+                console.error('Error al mostrar Top 10:', error);
+                const top10Div = document.getElementById('top10');
+                const top10Contenido = document.getElementById('top10Contenido');
+                top10Contenido.innerHTML = '<div class="alert alert-danger">Error al cargar el Top 10. Por favor, recarga la página.</div>';
+                top10Div.style.display = 'block';
+            }
         }
 
         // Event listener para el formulario
