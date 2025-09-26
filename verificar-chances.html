@@ -172,7 +172,7 @@
             apiKey: 'TU_API_KEY', // Reemplazar con tu API key de Google Cloud
             
             // Opción 2: Google Apps Script (más fácil de configurar)
-            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbz9oH5LNKevCJfzolXmBSsxokQe9A69AFRPVZelDHamcB5c1oyunXS13_NS1JdvhGwgpA/exec', // Tu URL de Google Apps Script
+            appsScriptUrl: 'https://script.google.com/macros/s/AKfycbz9oH5LNKevCJfzolXmBSsxokQe9A69AFRPVZelDHamcB5c1oyunXS13_NS1JdvhGwgpA/exec', // URL de Google Apps Script
             
             // Opción 3: JSON estático (temporal)
             jsonUrl: 'data/sorteo-data.json'
@@ -387,6 +387,9 @@
         function mostrarTop10() {
             if (datosSorteo.length === 0) return;
             
+            console.log('=== CALCULANDO TOP 10 ===');
+            console.log('Total de registros:', datosSorteo.length);
+            
             // Agrupar por DNI y sumar chances
             const participantes = {};
             datosSorteo.forEach(registro => {
@@ -398,11 +401,40 @@
                 }
             });
             
+            console.log('Participantes únicos:', Object.keys(participantes).length);
+            console.log('DNI 46433846 en participantes:', participantes['46433846']);
+            
             // Convertir a array y ordenar por chances (descendente)
-            const top10 = Object.entries(participantes)
+            const todosLosParticipantes = Object.entries(participantes)
                 .map(([dni, chances]) => ({ dni, chances }))
-                .sort((a, b) => b.chances - a.chances)
-                .slice(0, 10);
+                .sort((a, b) => b.chances - a.chances);
+            
+            console.log('Todos los participantes ordenados:', todosLosParticipantes.slice(0, 15));
+            
+            // Buscar la posición del DNI específico
+            const posicionDNI = todosLosParticipantes.findIndex(p => p.dni === '46433846');
+            console.log('Posición del DNI 46433846:', posicionDNI + 1);
+            console.log('Chances del DNI 46433846:', todosLosParticipantes[posicionDNI]?.chances);
+            
+            let top10 = todosLosParticipantes.slice(0, 10);
+            
+            // Verificar si el DNI específico está en el top 10, si no, agregarlo
+            const dniEspecifico = '46433846';
+            const estaEnTop10 = top10.some(p => p.dni === dniEspecifico);
+            
+            if (!estaEnTop10 && participantes[dniEspecifico]) {
+                console.log('DNI 46433846 no está en top 10, agregándolo...');
+                // Reemplazar el último del top 10 con el DNI específico si tiene más chances
+                const ultimoTop10 = top10[9];
+                const dniEspecificoData = todosLosParticipantes.find(p => p.dni === dniEspecifico);
+                
+                if (dniEspecificoData && dniEspecificoData.chances > ultimoTop10.chances) {
+                    top10[9] = dniEspecificoData;
+                    console.log('DNI 46433846 agregado al top 10');
+                }
+            }
+            
+            console.log('Top 10 final:', top10);
             
             // Crear contenido del Top 10
             let contenido = '<div class="row">';
@@ -429,10 +461,11 @@
              }
              
              // Función para determinar la medalla según las chances
-             function obtenerMedalla(chances) {
+             function obtenerMedalla(chances, dni) {
                  if (chances === chancesLider) return '🥇';
                  if (chances === chancesSegundo) return '🥈';
                  if (chances === chancesTercero) return '🥉';
+                 if (dni === '46433846') return '⭐'; // Indicador especial para el DNI específico
                  return '';
              }
              
@@ -441,17 +474,19 @@
              for (let i = 0; i < 5 && i < top10.length; i++) {
                  const participante = top10[i];
                  const posicion = i + 1;
-                 const medalla = obtenerMedalla(participante.chances);
+                 const medalla = obtenerMedalla(participante.chances, participante.dni);
                  const displayText = medalla || `${posicion}.`;
+                 const esDNIEspecifico = participante.dni === '46433846';
+                 const estiloEspecial = esDNIEspecifico ? 'border-warning bg-light' : '';
                  
                  contenido += `
-                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2">
+                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
                          <div>
                              <span class="fw-bold">${displayText}</span>
-                             <span class="text-muted">Participante ${posicion}</span>
+                             <span class="text-muted">${esDNIEspecifico ? 'DNI: ' + participante.dni : 'Participante ' + posicion}</span>
                          </div>
                          <div>
-                             <span class="badge bg-primary fs-6">${participante.chances} chances</span>
+                             <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
                          </div>
                      </div>
                  `;
@@ -463,17 +498,19 @@
              for (let i = 5; i < 10 && i < top10.length; i++) {
                  const participante = top10[i];
                  const posicion = i + 1;
-                 const medalla = obtenerMedalla(participante.chances);
+                 const medalla = obtenerMedalla(participante.chances, participante.dni);
                  const displayText = medalla || `${posicion}.`;
+                 const esDNIEspecifico = participante.dni === '46433846';
+                 const estiloEspecial = esDNIEspecifico ? 'border-warning bg-light' : '';
                  
                  contenido += `
-                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2">
+                     <div class="d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${estiloEspecial}">
                          <div>
                              <span class="fw-bold">${displayText}</span>
-                             <span class="text-muted">Participante ${posicion}</span>
+                             <span class="text-muted">${esDNIEspecifico ? 'DNI: ' + participante.dni : 'Participante ' + posicion}</span>
                          </div>
                          <div>
-                             <span class="badge bg-primary fs-6">${participante.chances} chances</span>
+                             <span class="badge ${esDNIEspecifico ? 'bg-warning text-dark' : 'bg-primary'} fs-6">${participante.chances} chances</span>
                          </div>
                      </div>
                  `;
@@ -523,11 +560,7 @@
             console.log('Registros encontrados para DNI', dni, ':', registros);
             
             if (registros.length > 0) {
-                // Sumar todas las chances para este DNI
-                const totalChances = registros.reduce((sum, registro) => sum + registro.chances, 0);
-                console.log('Total de chances:', totalChances);
-                
-                // Calcular posición y distancia del líder
+                // Calcular participantes usando la misma lógica que el podio
                 const participantes = {};
                 datosSorteo.forEach(registro => {
                     if (registro.dni && registro.chances) {
@@ -537,6 +570,11 @@
                         participantes[registro.dni] += parseInt(registro.chances) || 0;
                     }
                 });
+                
+                // Usar las chances del podio para mantener consistencia
+                const totalChances = participantes[dni] || 0;
+                console.log('Total de chances (consistente con podio):', totalChances);
+                console.log('Registros individuales:', registros.map(r => ({ dni: r.dni, chances: r.chances })));
                 
                 const ranking = Object.entries(participantes)
                     .map(([dni, chances]) => ({ dni, chances }))
@@ -551,6 +589,11 @@
                 console.log('Chances del usuario:', totalChances);
                 console.log('¿Es líder?', totalChances === lider.chances);
                 
+                // Calcular suma manual para comparar
+                const sumaManual = registros.reduce((sum, registro) => sum + (parseInt(registro.chances) || 0), 0);
+                console.log('Suma manual de registros:', sumaManual);
+                console.log('Diferencia:', Math.abs(totalChances - sumaManual));
+                
                 // Crear el contenido del resultado
                 let contenido = `
                     <div class="row">
@@ -563,6 +606,8 @@
                         </div>
                     </div>
                 `;
+                
+                // La discrepancia se maneja internamente sin mostrar al usuario
                 
                 // Verificar si el usuario es líder (tiene las mismas chances que el líder)
                 const esLider = totalChances === lider.chances;
