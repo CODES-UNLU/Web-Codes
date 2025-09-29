@@ -79,7 +79,7 @@ function enviarEmailEquipo(email, nombreEquipo, propuestaGanadora, equipoKey) {
     const cuerpo = `
 ¡Hola equipo ${nombreEquipo}!
 
-¡Felicitaciones! Las votaciones del Hackathon CODES++ han finalizado y tenemos excelentes noticias.
+¡Felicitaciones! Las votaciones del Hackathon CODES++ han finalizado y se ha elegido la propuesta que tu equipo desarrollará.
 
 ========================================
 ¡TU PROPUESTA GANADORA!
@@ -102,9 +102,9 @@ PRÓXIMOS PASOS
 FECHA LÍMITE DE ENTREGA
 ========================================
 
-FECHA: [FECHA A DEFINIR]
-HORA: [HORA A DEFINIR]
-FORMATO: [FORMATO DE ENTREGA A DEFINIR]
+FECHA: 28 de Septiembre
+HORA: 22:00 Hs
+FORMATO: No aplica
 
 ========================================
 RECURSOS DISPONIBLES
@@ -243,7 +243,7 @@ function crearEmailHTMLEquipo(nombreEquipo, propuestaGanadora) {
     
     <div class="felicitaciones">
       <h3>¡Excelentes noticias!</h3>
-      <p>Las votaciones del Hackathon CODES++ han finalizado y tu equipo ha sido seleccionado para desarrollar una propuesta ganadora.</p>
+      <p>Las votaciones del Hackathon CODES++ han finalizado y se ha elegido la propuesta que tu equipo desarrollará.</p>
     </div>
     
     <div class="section">
@@ -267,25 +267,8 @@ function crearEmailHTMLEquipo(nombreEquipo, propuestaGanadora) {
     
     <div class="section">
       <h3>⏰ Fecha Límite de Entrega</h3>
-      <p><strong>Fecha:</strong> [FECHA A DEFINIR]</p>
-      <p><strong>Hora:</strong> [HORA A DEFINIR]</p>
-      <p><strong>Formato:</strong> [FORMATO DE ENTREGA A DEFINIR]</p>
-    </div>
-    
-    <div class="section">
-      <h3>🛠️ Recursos Disponibles</h3>
-      <ul>
-        <li>Acceso a mentores técnicos</li>
-        <li>Herramientas de desarrollo</li>
-        <li>Espacio de trabajo colaborativo</li>
-        <li>Soporte del Centro de Estudiantes</li>
-      </ul>
-    </div>
-    
-    <div class="section">
-      <h3>📊 Ver Resultados Completos</h3>
-      <a href="${URL_RESULTADOS}" class="button">VER RESULTADOS</a>
-      <p><small>Si el botón no funciona, copia y pega este enlace: ${URL_RESULTADOS}</small></p>
+      <p><strong>Fecha:</strong> 28 de Septiembre</p>
+      <p><strong>Hora:</strong> 22:00 Hs</p>
     </div>
     
     <div class="section">
