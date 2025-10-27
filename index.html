@@ -1218,6 +1218,66 @@
   </head>
 
   <body>
+    <!-- Modal de Mudanza -->
+    <div
+      class="modal fade"
+      id="migrationModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="migrationModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-primary text-white border-0">
+            <h5 class="modal-title fw-bold" id="migrationModalLabel">
+              <i class="bi bi-info-circle-fill me-2"></i>¡Nos mudamos!
+            </h5>
+          </div>
+          <div class="modal-body text-center py-4">
+            <div class="mb-3">
+              <i class="bi bi-arrow-right-circle text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h4 class="mb-3 fw-bold">Nueva ubicación</h4>
+            <p class="lead mb-3">
+              Nos mudamos a nuestra nueva web:
+            </p>
+            <div class="alert alert-info border-0 shadow-sm">
+              <a 
+                href="https://codesunlu.vercel.app/" 
+                target="_blank" 
+                class="text-decoration-none fw-bold fs-5"
+                style="color: #0066cc;"
+              >
+                <i class="bi bi-globe me-2"></i>codesunlu.vercel.app
+              </a>
+            </div>
+            <p class="text-muted mb-0">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              Esta web pronto dejará de funcionar.
+            </p>
+          </div>
+          <div class="modal-footer border-0 justify-content-center">
+            <a 
+              href="https://codesunlu.vercel.app/" 
+              class="btn btn-primary btn-lg px-4"
+              target="_blank"
+            >
+              <i class="bi bi-box-arrow-up-right me-2"></i>Ir al nuevo sitio
+            </a>
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary btn-lg px-4" 
+              data-bs-dismiss="modal"
+            >
+              Continuar aquí
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scroll Indicator -->
     <div class="scroll-indicator">
       <div class="scroll-progress" id="scrollProgress"></div>
@@ -3030,6 +3090,18 @@
         const matrixCleanup = initMatrixRain();
 
 
+      });
+    </script>
+
+    <!-- Script para mostrar el modal de mudanza automáticamente -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar el modal automáticamente al cargar la página
+        var migrationModal = new bootstrap.Modal(document.getElementById('migrationModal'), {
+          backdrop: 'static',
+          keyboard: false
+        });
+        migrationModal.show();
       });
     </script>
   </body>
